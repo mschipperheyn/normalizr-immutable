@@ -26,16 +26,16 @@ Before normalization
 After normalization
 ```javascript
 const normalized = {
-  entities:{
-    articles: {
-      1: {
+  entities:{//Record
+    articles: {//Record
+      1: {//Record
         id:1,
         txt: 'Bla',
         user: 15
       }
     },
-    users:{
-      15:{
+    users:{//Record
+      15:{//Record
         id:15,
         name:'Marc'
       }
