@@ -1,5 +1,5 @@
-Normalizr-Immutable is an opiniated immutable version of Dan Abramov's [Normalizr](https://github.com/gaearon/normalizr).
-We recommend reading the documentation for Normalizr first, to get a basic idea of the intent of this concept.
+Normalizr-Immutable is an opiniated immutable version of Dan Abramov's [Normalizr](https://github.com/gaearon/normalizr) and Facebook's [Immutable](https://facebook.github.io/immutable-js).
+We recommend reading the documentation for Normalizr and Immutable first, to get a basic idea of the intent of these concepts.
 
 ### Installation
 ```
@@ -40,7 +40,8 @@ const normalized = {
         name:'Marc'
       }
     }
-  }
+  },
+  result:[1]//List
 }
 ```
 
@@ -48,11 +49,11 @@ If you use Redux, it optionally, allows you to reference the normalized object t
 This allows you to say:
 
 ```
-normalized.articles[1].user.name
+normalized.entities.articles[1].user.name
 ```
 
 ### How is this different from Normalizr?
-* Normalizr creates a mutable object
+* Normalizr-Immutable is immutable
 * Normalizr puts an id in the place of the object reference, Normalizr-Immutable (optionally) places a proxy there so you can keep using the object as if nothing changed.
 * Normalizr-Immutable adds an extra attribute to a schema: Record. This is an Immutable Record that defines the contract for the referenced 'class'.
 
@@ -66,6 +67,8 @@ normalized.articles[1].user.name
 ### How about Maps, Lists, etc?
 Normalizr-Immutable uses Records where possible in order to maintain object.property style access. Sequences are implemented through Lists.
 If you defined an object reference on your to-be-normalized object, it will be processed as a Record if the property has a Schema defined for it. Otherwise, it will become a Map (and require object.get('property') style access).
+
+When you work with Lists and Maps, such as with loops, you should use es6 style .forEach etc instead of for...in, for...of. Obviously, the latter will not work.
 
 ### Creating a schema
 Creating a schema is the same as originally in Normalizr, but we now add a Record to the definition. Please note that you need to use arrayOf, unionOf and valuesOf of Normalizr-Immutable.
@@ -148,7 +151,7 @@ So, if you're rendering an Article, in order to render the associated user, you 
 
 For this purpose, we introduce the proxy. The idea, is that you can simply reference `articles[1].user.name`. The proxy will take care of looking up the related object.
 
-Please note that Proxy support is not yet consistent across browsers and can also give headaches in testing environments with incomplete support (I've had stuff like infinite loops happen using node-inspector, etc). Tread with care.
+Please note that `Proxy` support is not yet consistent across browsers and can also give headaches in testing environments with incomplete support (I've had stuff like infinite loops happen using node-inspector, etc). Tread with care.
 
 So, with the proxy, an Article Record essentially looks like this:
 
@@ -161,7 +164,7 @@ new Article({
 })
 ```
 
-In order to use the proxy, you will need to give it access to the actual object structure. We have developed this feature testing against Redux, so we pass it the a getState function reference and the reference to the reducer inside the state structure.
+In order to use the proxy, you will need to give it access to the actual object structure. We have developed this feature testing against Redux, so we pass it the getState function reference and the reference to the reducer inside the state structure.
 
 ```javascript
 const normalized = normalize(json.articles.items, arrayOf(schemas.article),{
@@ -170,7 +173,7 @@ const normalized = normalize(json.articles.items, arrayOf(schemas.article),{
 });
 ```
 
-Please note that we pass `getState` and not `getState()`. getState is a function reference to the method that will return the current state of the Redux store. If you are using Redux, you can get a reference to this method like so
+Please note that we pass `getState` and not `getState()`. `getState` is a function reference to the method that will return the current state of the Redux store. If you are using Redux, you can get a reference to this method like so
 
 ```javascript
 export function loadArticles(){
