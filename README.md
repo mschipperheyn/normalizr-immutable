@@ -149,7 +149,7 @@ new NormalizedRecord({
 
 ```
 
-So, if you're rendering an Article, in order to render the associated user, you will have to retrieve it from the entity structure. You could do this manually, or you could de-normalize/marshal your structure when you retrieve it for rendering. But this can be expensive.
+So, if you're rendering an Article, in order to render the associated user, you will have to retrieve it from the entity structure. You could do this manually, or you could denormalize/marshal your structure when you retrieve it for rendering. But this can be expensive.
 
 For this purpose, we introduce the proxy. The idea, is that you can simply reference `articles[1].user.name`. The proxy will take care of looking up the related object.
 
