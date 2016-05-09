@@ -1,4 +1,4 @@
-Normalizr-Immutable is an opiniated immutable version of Dan Abramov's [Normalizr](https://github.com/gaearon/normalizr) and Facebook's [Immutable](https://facebook.github.io/immutable-js).
+Normalizr-Immutable is an opiniated immutable version of Dan Abramov's [Normalizr](https://github.com/gaearon/normalizr) using Facebook's [Immutable](https://facebook.github.io/immutable-js).
 We recommend reading the documentation for Normalizr and Immutable first, to get a basic idea of the intent of these concepts.
 
 ### Installation
