@@ -8,8 +8,8 @@ npm install normalizr-immutable
 
 ### What does Normalizr-Immutable do?
 It normalizes a deeply nested json structure according to a schema for Redux apps and makes the resulting object immutable.
-It does this in a way that preserves the ability to reference objects using traditional java object notation.
-So, after normalizing an object, you can still treat the normalized object as a traditional java object:
+It does this in a way that preserves the ability to reference objects using traditional javascript object notation.
+So, after normalizing an object, you can still treat the normalized object as a traditional javascript object:
 
 Before normalization
 ```json
