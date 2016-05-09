@@ -235,8 +235,6 @@ function normalize(obj, schema, options = {}) {
     :
     result;
 
-  console.log(results);
-
   for(let schemaKey in bag){
     keyStructure[schemaKey] = null;
     const ValueStructure = new Record(bag[schemaKey]);

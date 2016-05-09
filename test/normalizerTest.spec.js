@@ -58,7 +58,7 @@ function myReducer(state = initialState, action) {
 const store = createStore(combineReducers({
   myReducer
 }),{},applyMiddleware(
-  loggerMiddleware()
+  // loggerMiddleware()
 ));
 
 const reducerKey = 'myReducer';
