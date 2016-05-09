@@ -9,22 +9,47 @@ npm install normalizr-immutable
 ### What does Normalizr-Immutable do?
 It normalizes a deeply nested json structure according to a schema for Redux apps and makes the resulting object immutable.
 It does this in a way that preserves the ability to reference objects using traditional java object notation.
-So, after normalizing an object, you can still do:
+So, after normalizing an object, you can still treat the normalized object as a traditional java object:
 
-```javascript
-{
-  user:{
-    id:15,
-    name:'Marc'
+Before normalization
+```json
+"article": {
+  "id": 1,
+  "txt": "Bla",
+  "user":{
+    "id":15,
+    "name":"Marc"
   }
 }
 ```
 
-```
-article.user.name
+After normalization
+```javascript
+const normalized = {
+  entities:{
+    articles: {
+      1: {
+        id:1,
+        txt: 'Bla',
+        user: 15
+      }
+    },
+    users:{
+      15:{
+        id:15,
+        name:'Marc'
+      }
+    }
+  }
+}
 ```
 
 If you use Redux, it optionally, allows you to reference the normalized object through a proxy. This should also work in other environments, but this has not been tested.
+This allows you to say:
+
+```
+normalized.articles[1].user.name
+```
 
 ### How is this different from Normalizr?
 * Normalizr creates a mutable object
@@ -145,7 +170,7 @@ const normalized = normalize(json.articles.items, arrayOf(schemas.article),{
 });
 ```
 
-Please note that we pass `getState` and not `getState()`. getState is a function reference to the method that will return the current state of the state. If you are using Redux, you can get a reference to this method like so
+Please note that we pass `getState` and not `getState()`. getState is a function reference to the method that will return the current state of the Redux store. If you are using Redux, you can get a reference to this method like so
 
 ```javascript
 export function loadArticles(){
@@ -169,7 +194,7 @@ export function loadArticles(){
 I still have to write examples, but for now check out the tests to get an idea of how it works.
 
 ### Final remarks
-The use of the Proxy as a way of accessing the entity structure transparently, would be totally possible also in the original Normalizr library as well. I'm not familiar with ways to override functions in a non class structure. If anyone has any suggestions on this, I could spin off the Proxy functionality into a separate library that could serve both libraries.
+The use of the Proxy as a way of accessing the entity structure transparently, would be totally possible also in the original Normalizr library as well. I'm still studying on ways to override functions in a non class structure. If anyone has any suggestions on this, I could spin off the Proxy functionality into a separate library that could serve both libraries.
 
 The way I turn a list of entities into Records (the ValueStructure Record) is a bit of a hack. I basically create the Record with the actual values as defaults, which is not the way you should be using Records. I apply this hack to ensure that we can keep referencing objects through dot notation. If someone has any problems with this in terms of performance, I would like to hear about it.
 
