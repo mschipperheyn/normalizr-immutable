@@ -63,12 +63,13 @@ normalized.entities.articles[1].user.name
 * It gives you the benefit of immutability without sacrificing the convenience of object.property access.
 * When you render your data, you don't want to retrieve objects separately for normalized references or marshal your normalized object back into a denormalized one. The use of the Proxy allows you to use your normalized structure as if it was a normal object.
 * You can transition to using immutable with minimal changes.
+* If you use the proxy, you can serialize a normalized structure back to its original JSON structure with `normalized.toJSON()`.
 
 ### How about Maps, Lists, etc?
 Normalizr-Immutable uses Records where possible in order to maintain object.property style access. Sequences are implemented through Lists.
 If you defined an object reference on your to-be-normalized object, it will be processed as a Record if the property has a Schema defined for it. Otherwise, it will become a Map (and require object.get('property') style access).
 
-When you work with Lists and Maps, such as with loops, you should use es6 style .forEach etc instead of for...in, for...of. Obviously, the latter will not work.
+When you work with Lists and Maps, such as with loops, you should use es6 style `.forEach` etc instead of `for...in`, `for...of`. Obviously, the latter will not work.
 
 ### Creating a schema
 Creating a schema is the same as originally in Normalizr, but we now add a Record to the definition. Please note that you need to use arrayOf, unionOf and valuesOf of Normalizr-Immutable.
@@ -76,12 +77,6 @@ Creating a schema is the same as originally in Normalizr, but we now add a Recor
 ```javascript
 import { Record, List, Map } from 'immutable';
 import { Schema, arrayOf } from 'normalizr-immutable';
-
-const Article = new Record({
-  id:null,
-  txt:null,
-  user: null
-});
 
 const User = new Record({
   id:null,
@@ -91,6 +86,13 @@ const User = new Record({
 const Tag = new Record({
   id:null,
   label:null
+});
+
+const Article = new Record({
+  id:null,
+  txt:null,
+  user: new User({}),
+  tags: new List()
 });
 
 const schemas = {
@@ -126,14 +128,14 @@ new NormalizedRecord({
       1: new Article({
         id      : 1,
         title   : 'Some Article',
-        author  : 1,
+        user    : 1,
         tags    : new List([5])
       })
     }),
     users: new ValueStructure({
       1: new User({
         id: 1,
-        name: 'Dan'
+        name: 'Marc'
       })
     }),
     tags: new ValueStructure({
