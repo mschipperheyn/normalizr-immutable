@@ -15,7 +15,7 @@ import { createStore, combineReducers, applyMiddleware } from 'redux';
 
 import json from './mocks/articles.json';
 import jsonUpdate from './mocks/articles_update.json';
-import { normalize, Schema, arrayOf, NormalizedRecord } from '../src/ImmutableNormalizr';
+import { normalize, Schema, arrayOf, NormalizedRecord } from '../src/NormalizrImmutable';
 import { normalize as normalize0/*, Schema as Schema0*/, arrayOf as arrayOf0 } from 'normalizr';
 
 import { Record, List, Map } from 'immutable';

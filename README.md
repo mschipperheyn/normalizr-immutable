@@ -31,7 +31,7 @@ const normalized = {
       1: {//Record
         id:1,
         txt: 'Bla',
-        user: 15
+        user: 15 //Optionally a proxy
       }
     },
     users:{//Record
@@ -193,10 +193,17 @@ export function loadArticles(){
 ### Examples
 I still have to write examples, but for now check out the tests to get an idea of how it works.
 
+### Browser support
+This library has currently only been tested against React-Native, so I would like to hear about experiences in the browser. For a list of browsers with appropriate Proxy support [http://caniuse.com/#feat=proxy](http://caniuse.com/#feat=proxy).
+
 ### Final remarks
 The use of the Proxy as a way of accessing the entity structure transparently, would be totally possible also in the original Normalizr library as well. I'm still studying on ways to override functions in a non class structure. If anyone has any suggestions on this, I could spin off the Proxy functionality into a separate library that could serve both libraries.
 
 The way I turn a list of entities into Records (the ValueStructure Record) is a bit of a hack. I basically create the Record with the actual values as defaults, which is not the way you should be using Records. I apply this hack to ensure that we can keep referencing objects through dot notation. If someone has any problems with this in terms of performance, I would like to hear about it.
+
+### TODO
+* API description
+* Examples
 
 ### Troubleshooting
 * If you get any error message with regards to the Proxy object being unknown, please make sure you have set up your babel presets correctly to support proxies. If you use mocha for testing, you will need to add `--harmony-proxies` to the mocha command
