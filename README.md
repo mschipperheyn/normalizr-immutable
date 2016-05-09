@@ -206,9 +206,12 @@ The use of the Proxy as a way of accessing the entity structure transparently, w
 
 The way I turn a list of entities into Records (the ValueStructure Record) is a bit of a hack. I basically create the Record with the actual values as defaults, which is not the way you should be using Records. I apply this hack to ensure that we can keep referencing objects through dot notation. If someone has any problems with this in terms of performance, I would like to hear about it.
 
+This library has been developed as part of [Ology](www.ology.com.br), the social network for physicians.
+
 ### TODO
 * API description
 * Examples
+* Verify working of unionOf and valuesOf. I haven't really worked with that yet.
 
 ### Troubleshooting
 * If you get any error message with regards to the Proxy object being unknown, please make sure you have set up your babel presets correctly to support proxies. If you use mocha for testing, you will need to add `--harmony-proxies` to the mocha command

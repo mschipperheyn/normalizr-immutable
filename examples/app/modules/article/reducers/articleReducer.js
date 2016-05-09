@@ -1,7 +1,7 @@
 import * as types from '../articleActionTypes';
-import Immutable, { fromJS, Map, List } from 'immutable';
 import { NormalizedRecord } from 'normalizr-immutable';
 
+//NormalizedRecord is simply a convenience object that is the base record that we use to return the normalized structure.
 const initialState = new NormalizedRecord({});
 
 export default function articleReducer(state = initialState, action = {}) {
