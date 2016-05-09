@@ -139,10 +139,13 @@ new Article({
 In order to use the proxy, you will need to give it access to the actual object structure. We have developed this feature testing against Redux, so we pass it the a getState function reference and the reference to the reducer inside the state structure.
 
 ```javascript
-normalizeJson(json.articles.items, arrayOf(schemas.article),getState,'articleReducer');
+const normalized = normalize(json.articles.items, arrayOf(schemas.article),{
+  getState,
+  reducerKey:'articleReducer'
+});
 ```
 
-Please not that we pass `getState` and not `getState()`. getState is a function reference to the method that will return the current state of the state. If you are using Redux, you can get a reference to this method like so
+Please note that we pass `getState` and not `getState()`. getState is a function reference to the method that will return the current state of the state. If you are using Redux, you can get a reference to this method like so
 
 ```javascript
 export function loadArticles(){
