@@ -1,10 +1,8 @@
 import * as types from '../articleActionTypes';
-import Immutable, { Map, List } from 'immutable';
+import Immutable, { fromJS, Map, List } from 'immutable';
+import { NormalizedRecord } from 'normalizr-immutable';
 
-const initialState = {
-    entities        : null,
-    result          : new List()
-};
+const initialState = new NormalizedRecord({});
 
 export default function articleReducer(state = initialState, action = {}) {
   switch (action.type) {
