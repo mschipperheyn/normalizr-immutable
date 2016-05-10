@@ -69,7 +69,7 @@ normalized.entities.articles[1].user.name
 Normalizr-Immutable uses Records where possible in order to maintain object.property style access. Sequences are implemented through Lists.
 If you defined an object reference on your to-be-normalized object, it will be processed as a Record if the property has a Schema defined for it. Otherwise, it will become a Map (and require object.get('property') style access).
 
-When you work with Lists and Maps, such as with loops, you should use es6 style `.forEach` etc instead of `for...in`, `for...of`. Obviously, the latter will not work.
+When you work with Lists and Maps, such as with loops, you should use es6 style `.forEach`, `.map`, etc. Using `for...in`, `for...of` and the like will not work.
 
 ### Creating a schema
 Creating a schema is the same as originally in Normalizr, but we now add a Record to the definition. Please note that you need to use arrayOf, unionOf and valuesOf of Normalizr-Immutable.
