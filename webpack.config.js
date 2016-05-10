@@ -1,7 +1,7 @@
 var webpack = require('webpack');
 
 module.exports = {
-    entry: './src/NormalizrImmutable',
+    entry: './src/index',
     module: {
         loaders: [
             {
