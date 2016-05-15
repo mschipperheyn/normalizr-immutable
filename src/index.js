@@ -1,13 +1,12 @@
 // Based on Normalizr 2.0.1
 'use strict';
-
 // import { arrayOf, valuesOf, unionOf } from 'normalizr';
 import { Record, Map, List, Iterable } from 'immutable';
 
 //Shim for new Proxy instead of Proxy.create
 import Proxy from 'harmony-proxy';
 //Should patch proxy to work properly
-import Reflect from 'harmony-reflect';
+// import Reflect from 'harmony-reflect';
 
 import RecordEntitySchema from './RecordEntitySchema';
 import IterableSchema from './IterableSchema';
@@ -15,7 +14,7 @@ import UnionSchema from './UnionSchema';
 import lodashIsEqual from 'lodash/isEqual';
 import lodashIsObject from 'lodash/isObject';
 
-const NormalizedRecord = new Record({entities:null, result: new List()});
+const NormalizedRecord = new Record({entities:null, result: null});
 const PolymorphicMapper = new Record({id:null, schema: null});
 
 function defaultAssignEntity(normalized, key, entity) {
@@ -26,27 +25,19 @@ function proxy(id, schema, bag, options){
   /**
    * if options contains getState reference and reducer key we can create a proxyHandler
    */
+  if(typeof Proxy === 'undefined')
+    return id;
 
   return new Proxy({id: id, key: schema.getKey()},{
     get(target, name, receiver) {
-      // if(name === 'toJSON'){
-      //   console.log(`WARN: use toJSON in stead of JSON.stringify on immutable data structures: ${key}`);
-      // }
-      //toString methods create recursive issues
-      // if(name === 'toJSON' || name === 'toString')
-      //   return () => target;
-      // if (name === 'valueOf')
-      //   return target[name];
-      //this method can get called before the normalization process has completed.
-      //We can always expect entities to be a record, so we can defensively check for existence
-      //We want to be able to return the id before the state has been initialized
+      
       if(name === 'id')
         return target.id;
 
       const state = options.getState();
 
-      if(state[options.reducerKey].entities){
-        const ref = Reflect.get(state[options.reducerKey].entities[schema.getKey()][target.id],name);
+      if(state[schema.getReducerKey()].entities){
+        const ref = state[schema.getReducerKey()].entities[schema.getKey()][target.id][name];
         return ref;
       }
       return undefined;
@@ -55,7 +46,7 @@ function proxy(id, schema, bag, options){
       throw new Error('Not supported');
     },
     has(name){
-      return options.getState()[options.reducerKey].entities[schema.getKey()][id].has(name);
+      return options.getState()[schema.getReducerKey()].entities[schema.getKey()][id].has(name);
     },
     valueOf : function () {
       return 0;
@@ -221,19 +212,28 @@ function normalize(obj, schema, options = {}) {
     throw new Error('Normalize accepts an object for schema.');
   }
 
+  if(options.getState && typeof Proxy === 'undefined'){
+    console.warn('Proxies not supported in this environment');
+  }
+
   let bag = {};
   let entityStructure = {};
   let keyStructure = {};
   let results = [];
+
+  //This will either return a sequence, an id or a Proxy object
   let result = visit(obj, schema, bag, options);
 
   //we are now assuming that the returned "ids" are actually proxies if there is a getState method
-  results = options.getState?
-    result.map(function(val){
-      return val.id;
-    })
-    :
-    result;
+  if(options.getState){
+    results = result instanceof List?
+      result.map(function(val){
+        return val.id;
+      }) :
+      result.id
+  }else{
+    results = result;
+  }
 
   for(let schemaKey in bag){
     keyStructure[schemaKey] = null;
@@ -245,7 +245,7 @@ function normalize(obj, schema, options = {}) {
 
   return new NormalizedRecord({
     entities: new EntityStructure(entityStructure),
-    result: new List(results)
+    result: results
   });
 }
 

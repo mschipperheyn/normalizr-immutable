@@ -3,8 +3,16 @@ We recommend reading the documentation for Normalizr and Immutable first, to get
 
 ### Installation
 ```
-npm install normalizr-immutable
+npm install --save normalizr-immutable
 ```
+
+### Changes to API!
+Based on user feedback I decided to make some changes to the API:
+* `reducerKey` is now an attribute for Schema. This makes it possible to reference entities that are stored in other reducers.
+
+It does mean that if you receive different levels of detail for a single type of entity across REST endpoints, or you want to maintain the original functionality of referencing entities within one reducer, you may need to maintain different Schema definitions for that entity.
+
+If you do want to maintain entities across reducers, you have to be careful not to reference a reducer through the Proxy that has not been hydrated yet.
 
 ### What does Normalizr-Immutable do?
 It normalizes a deeply nested json structure according to a schema for Redux apps and makes the resulting object immutable.
@@ -169,6 +177,13 @@ new Article({
 In order to use the proxy, you will need to give it access to the actual object structure. We have developed this feature testing against Redux, so we pass it the getState function reference and the reference to the reducer inside the state structure.
 
 ```javascript
+const schemas = {
+  article : new Schema('articles', { idAttribute: 'id', record: Article, reducerKey: 'articleReducer' }),
+  user    : new Schema('users', { idAttribute: 'id', record: User, reducerKey: 'userReducer'  }),
+  tag     : new Schema('tags', { idAttribute: 'id', record: Tag, reducerKey: 'tagReducer'   })
+};
+
+
 const normalized = normalize(json.articles.items, arrayOf(schemas.article),{
   getState,
   reducerKey:'articleReducer'
@@ -195,9 +210,6 @@ export function loadArticles(){
 
 `articleReducer` in this case, is the name of the reducer. Currently we assume that the `result` and `entitites` keys are available in the root of the referenced reducer. This will be made more flexible in future versions.
 
-### Examples
-I still have to write examples, but for now check out the tests to get an idea of how it works.
-
 ### Browser support
 This library has currently only been tested against React-Native, so I would like to hear about experiences in the browser. For a list of browsers with appropriate Proxy support [http://caniuse.com/#feat=proxy](http://caniuse.com/#feat=proxy).
 
@@ -207,6 +219,8 @@ The use of the Proxy as a way of accessing the entity structure transparently, w
 The way I turn a list of entities into Records (the ValueStructure Record) is a bit of a hack. I basically create the Record with the actual values as defaults, which is not the way you should be using Records. I apply this hack to ensure that we can keep referencing objects through dot notation. If someone has any problems with this in terms of performance, I would like to hear about it.
 
 This library has been developed as part of [Ology](https://www.ology.com.br), the social network for physicians.
+
+I removed harmony-reflect because it's a rather big library and more recent versions of v8 don't need it. I'm just maintaining the harmony-proxy shim. 
 
 ### TODO
 * API description
