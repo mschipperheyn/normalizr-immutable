@@ -16,13 +16,18 @@ export default class RecordEntitySchema extends Schema{
     this._getId = typeof idAttribute === 'function' ? idAttribute : x => x[idAttribute];
     this._idAttribute = idAttribute;
     this._record = options.record;
+    this._reducerKey = options.reducerKey;
   }
 
   getRecord() {
     return this._record;
   }
 
+  getReducerKey() {
+    return this._reducerKey;
+  }
+
   toString(){
-    return `EntitySchema, key: ${this._key}, idAttribute: ${this._idAttribute}`;
+    return `EntitySchema, key: ${this._key}, idAttribute: ${this._idAttribute}, reducerKey: ${this._reducerKey}`;
   }
 }

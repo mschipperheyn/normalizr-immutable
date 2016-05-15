@@ -1,0 +1,36 @@
+{
+  "id" : 49443,
+  "txt" : "Testing Normalizr",
+  "user" : {
+    "nickName" : "Marc",
+    "id" : 192
+  },
+  "tags": [{
+      "id" : 5,
+      "label" : "React"
+    },
+    {
+      "id" : 6,
+      "label" : "Normalizr"
+    }
+  ],
+  "comments" : [
+    {
+      "user" : {
+        "nickName" : "Diogenes",
+        "id" : 193
+      },
+      "id" : 50001,
+      "txt" : "bla"
+    },
+    {
+      "user" : {
+        "nickName" : "Marc",
+        "id" : 192
+      },
+      "id" : 50002,
+      "txt" : "bla die bla 2"
+    }
+  ],
+  "resultCount" : 114
+}

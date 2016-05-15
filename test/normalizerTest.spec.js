@@ -1,5 +1,5 @@
 'use strict';
-import { fromJS } from 'immutable';
+import { is, fromJS } from 'immutable';
 import { assert as assert0, expect as expect0, should as should0 } from 'chai';
 
 import iChaiImmutable from 'chai';
@@ -15,10 +15,14 @@ import { createStore, combineReducers, applyMiddleware } from 'redux';
 
 import json from './mocks/articles.json';
 import jsonUpdate from './mocks/articles_update.json';
+import jsonObject from './mocks/article_comments.json';
+import jsonUsers from './mocks/users.json';
 import { normalize, Schema, arrayOf, NormalizedRecord } from '../src/index';
 import { normalize as normalize0/*, Schema as Schema0*/, arrayOf as arrayOf0 } from 'normalizr';
 
 import { Record, List, Map } from 'immutable';
+
+const reducerKey = 'myReducer';
 
 const Tag = new Record({
   id:null,
@@ -35,24 +39,29 @@ const Article = new Record({
   id:null,
   txt:null,
   user:new User(),
-  tags:new List()
+  tags:new List(),
+  comments:new List()
+
 });
 
 const schemas = {
-  article : new Schema('articles', { idAttribute: 'id', record: Article }),
-  user : new Schema('users', { idAttribute: 'id', record: User  }),
-  tag : new Schema('tags', { idAttribute: 'id', record: Tag  })
+  article : new Schema('articles', { idAttribute: 'id', record: Article, reducerKey: reducerKey }),
+  user : new Schema('users', { idAttribute: 'id', record: User, reducerKey: reducerKey  }),
+  tag : new Schema('tags', { idAttribute: 'id', record: Tag, reducerKey: reducerKey  })
 };
 
 schemas.article.define({
   user: schemas.user,
-  tags: arrayOf(schemas.tag)
+  tags: arrayOf(schemas.tag),
+  comments:arrayOf(schemas.article)
 });
 
 const initialState = new NormalizedRecord();
 
 function myReducer(state = initialState, action) {
-  return state.merge(action.payload);
+  if(action.type === 'articles')
+    return state.merge(action.payload);
+  return state;
 };
 
 const store = createStore(combineReducers({
@@ -60,8 +69,6 @@ const store = createStore(combineReducers({
 }),{},applyMiddleware(
   // loggerMiddleware()
 ));
-
-const reducerKey = 'myReducer';
 
 describe("test normalizr", () => {
     it("should work against the default normalizr", () => {
@@ -100,12 +107,11 @@ describe("test normalizr", () => {
     it("should allow a proxy function to lazy load the reference", () => {
 
       const normalized = normalize(json.articles.items, arrayOf(schemas.article),{
-        getState:store.getState,
-        reducerKey
+        getState:store.getState
       });
 
       store.dispatch({
-        type:'any',
+        type:'articles',
         payload:normalized
       })
 
@@ -118,41 +124,124 @@ describe("test normalizr", () => {
     it("show dynamic state changes after the reference has passed and not just a passed static state", () => {
 
       let normalized = normalize(json.articles.items, arrayOf(schemas.article),{
-        getState:store.getState,
-        reducerKey
+        getState:store.getState
       });
 
       store.dispatch({
-        type:'any',
+        type:'articles',
         payload:normalized
       });
 
       normalized = normalize(jsonUpdate.articles.items, arrayOf(schemas.article),{
-        getState:store.getState,
-        reducerKey
+        getState:store.getState
       });
 
       expect(normalized.entities.articles[49444].user.id).to.equal(193);
     });
 
-    it("show updated content leads to updated / merged state", () => {
+    it("should process a single object", () => {
 
-    });
-
-    it("show processing of iterables", () => {
-
-      const normalized = normalize(json.articles.items, arrayOf(schemas.article),{
-        getState:store.getState,
-        reducerKey
+      const normalized = normalize(jsonObject, schemas.article,{
+        getState:store.getState
       });
 
       store.dispatch({
-        type:'any',
+        type:'articles',
+        payload:normalized
+      })
+
+      expect(normalized.entities.articles[49443].user.id).to.equal(192);
+      expect(normalized.entities.articles.get(50001).user.get('id')).to.equals(193);
+      expect(normalized.entities.articles.get(50002).user.nickName).to.equal('Marc');
+
+    });
+
+    it("should process iterables", () => {
+
+      const normalized = normalize(json.articles.items, arrayOf(schemas.article),{
+        getState:store.getState
+      });
+
+      store.dispatch({
+        type:'articles',
         payload:normalized
       })
 
       expect(normalized.entities.articles[49443].tags).to.have.size(2);
       expect(normalized.entities.articles.get(49443).tags.get(0).label).to.equal("React");
+    });
+
+    it("accesses objects across different reducers", () => {
+
+      const mySchemas = {
+        article : new Schema('articles', { idAttribute: 'id', record: Article, reducerKey: reducerKey }),
+        user : new Schema('users', { idAttribute: 'id', record: User, reducerKey: 'userReducer' }),
+        tag : new Schema('tags', { idAttribute: 'id', record: Tag, reducerKey: reducerKey  })
+      };
+
+      mySchemas.article.define({
+        user: mySchemas.user,
+        tags: arrayOf(mySchemas.tag),
+        comments:arrayOf(mySchemas.article)
+      });
+
+      function userReducer(state = initialState, action) {
+        if(action.type === 'users')
+          return state.merge(action.payload);
+        return state;
+      };
+
+      const myStore = createStore(combineReducers({
+        myReducer,
+        userReducer
+      }),{},applyMiddleware(
+        // loggerMiddleware()
+      ));
+
+      const normalized = normalize(json.articles.items, arrayOf(mySchemas.article),{
+        getState:myStore.getState
+      });
+
+      const normalizedUsers = normalize(jsonUsers.users, arrayOf(mySchemas.user),{
+        getState:myStore.getState
+      });
+
+      myStore.dispatch({
+        type:'articles',
+        payload:normalized
+      });
+
+      myStore.dispatch({
+        type:'users',
+        payload:normalizedUsers
+      });
+
+      expect(normalized.entities.articles[49443].user.id).to.equal(192);
+      expect(normalized.entities.articles.get(49443).user.get('id')).to.equals(192);
+      expect(normalized.entities.articles.get(49443).user.nickName).to.equal('Marc');
+
+    });
+
+    it("equals Objects as different Proxies pass is(r1,r2)", () => {
+      const normalized = normalize(json.articles.items, arrayOf(schemas.article),{
+        getState:store.getState
+      });
+
+      store.dispatch({
+        type:'articles',
+        payload:normalized
+      })
+
+      expect(normalized.entities.articles[49442].user).to.equal(normalized.entities.articles[49442].user);
+      expect(normalized.entities.articles[49442].user).to.equal(normalized.entities.articles[49443].user);
+      expect(is(normalized.entities.articles[49442].user,normalized.entities.articles[49442].user)).to.be.true;
+      expect(is(normalized.entities.articles[49442].user,normalized.entities.articles[49443].user)).to.be.true;
+
+    });
+
+    it("show updated content leads to updated / merged state", () => {
+
+
     });
 
     it("show processing of unions", () => {

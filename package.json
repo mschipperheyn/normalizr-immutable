@@ -37,7 +37,7 @@
     "immutable": "^3.7.6",
     "lodash": "^4.2.1",
     "lodash-es": "^4.2.1",
-    "normalizr": "^2.0.1"
+    "normalizr": "^2.0.2"
   },
   "devDependencies": {
     "babel-cli": "^6.8.0",
