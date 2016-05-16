@@ -13,6 +13,7 @@ Based on user feedback I decided to make some changes to the API:
 It does mean that if you receive different levels of detail for a single type of entity across REST endpoints, or you want to maintain the original functionality of referencing entities within one reducer, you may need to maintain different Schema definitions for that entity.
 
 If you do want to maintain entities across reducers, you have to be careful not to reference a reducer through the Proxy that has not been hydrated yet.
+* The Record object is now part of the method signature for Schema. Since it's not optional, it shouldn't be an option.
 * added a new option `useMapsForEntityObjects` to the `options` object, which defaults to `false`. When `useMapsForEntityObjects` is set to `true`, it will use a Map for the entity objects (e.g. articles). When set to `false`, it will use a Record for this. See the API description for more info.
 
 `normalize(json.articles.items, arrayOf(schemas.article),{getState: store.getState,useMapsForEntityObjects: true});`
