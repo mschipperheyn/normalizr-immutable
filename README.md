@@ -385,13 +385,13 @@ You may optionally specify any of the following options:
 
 * `useProxyForResults` (boolean): When `useProxyForResults` is set to `true`, it will set a Proxy *also* in the result key object or `List`. This will allow you to reference the object directly from the result.
 
-After normalization
 ```javascript
 const normalized = normalize(json.articles.items, arrayOf(schemas.article),{
   getState:store.getState,
   useProxyForResults:true
 });
 
+//resulting object looks like this
 const normalized = {//Record
   entities:{
     articles: {
@@ -411,7 +411,7 @@ const normalized = {//Record
   result:[new Proxy({id: 1, key: 'articles'})]
 };
 
-console.log(normalized.results.user.name);//Prints 'Marc'
+console.log(normalized.result.get(0).user.name);//Prints 'Marc'
 ```
 
 * `assignEntity` (function): This is useful if your backend emits additional fields, such as separate ID fields, you'd like to delete in the normalized entity. See [the tests](https://github.com/gaearon/normalizr/blob/a0931d7c953b24f8f680b537b5f23a20e8483be1/test/index.js#L89-L200) and the [discussion](https://github.com/gaearon/normalizr/issues/10) for a usage example.
