@@ -30,15 +30,18 @@ function proxy(id, schema, bag, options){
 
   return new Proxy({id: id, key: schema.getKey()},{
     get(target, name, receiver) {
-      
+
       if(name === 'id')
         return target.id;
 
       const state = options.getState();
 
       if(state[schema.getReducerKey()].entities){
-        const ref = state[schema.getReducerKey()].entities[schema.getKey()][target.id][name];
-        return ref;
+        if(options.useMapsForEntityObjects){
+          return state[schema.getReducerKey()].entities[schema.getKey()].get(target.id + '')[name];
+        }else{
+          return state[schema.getReducerKey()].entities[schema.getKey()][target.id][name];
+        }
       }
       return undefined;
     },
@@ -46,7 +49,11 @@ function proxy(id, schema, bag, options){
       throw new Error('Not supported');
     },
     has(name){
-      return options.getState()[schema.getReducerKey()].entities[schema.getKey()][id].has(name);
+      if(options.useMapsForEntityObjects){
+        return options.getState()[schema.getReducerKey()].entities[schema.getKey()].get(id + '').has(name);
+      }else{
+        return options.getState()[schema.getReducerKey()].entities[schema.getKey()][id].has(name);
+      }
     },
     valueOf : function () {
       return 0;
@@ -202,7 +209,42 @@ function unionOf(schema, options) {
   return new UnionSchema(schema, options);
 }
 
-function normalize(obj, schema, options = {}) {
+/**
+ * object: a javascript object
+ * schema: a RecordEntitySchema
+ * options: an object with the following optional keys
+ *  getState: a function reference that returns the current state. If available, a proxy will be placed in place of an id reference (the key needs to be reference in the schema definition)
+ *  useMapsForEntityObjects: boolean. If true, will use a Map in stead of a Record to store id-RecordObject pairs. This means that you have to access a specific entity object like so:
+ *  `
+ * useMapsForEntityObjects:false, this.props.articleReducer.entities.articles[5].label
+ *    {
+ *      entities:{//Record key
+ *        articles:{//Record key
+ *          5:{//Record
+ *              label: 'article label'
+ *          }
+ *        }
+ *      }
+ *    }
+ * useMapsForEntityObjects:true, this.props.articleReducer.entities.articles.get(5).label
+ *  `
+ *    {
+ *      entities:{//Record key
+ *        articles:{//Record key
+ *          5:{//Map key
+ *              label: 'article label'
+ *          }
+ *        }
+ *      }
+ *    }
+ *  `
+ * If you use proxies, the impact on your code will be minimal.
+ * The disadvantage of using Records in stead of Maps for the entity objects is that when you try to merge new content into the Record, you will fail.
+ */
+function normalize(obj, schema, options = {
+  getState: undefined,
+  useMapsForEntityObjects: false
+}) {
 
   if (!lodashIsObject(obj) && !Array.isArray(obj)) {
     throw new Error('Normalize accepts an object or an array as its input.');
@@ -235,16 +277,25 @@ function normalize(obj, schema, options = {}) {
     results = result;
   }
 
+  let entities = null;
+
   for(let schemaKey in bag){
     keyStructure[schemaKey] = null;
-    const ValueStructure = new Record(bag[schemaKey]);
-    entityStructure[schemaKey] = new ValueStructure({});
+
+    if(options.useMapsForEntityObjects){
+      entityStructure[schemaKey] = new Map(bag[schemaKey]);
+    }else{
+      const ValueStructure = new Record(bag[schemaKey]);
+      entityStructure[schemaKey] = new ValueStructure({});
+    }
+
   }
 
   const EntityStructure = new Record(keyStructure);
+  entities = new EntityStructure(entityStructure);
 
   return new NormalizedRecord({
-    entities: new EntityStructure(entityStructure),
+    entities: entities,
     result: results
   });
 }

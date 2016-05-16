@@ -239,8 +239,51 @@ describe("test normalizr", () => {
 
     });
 
-    it("show updated content leads to updated / merged state", () => {
+    it("allows useMapsForEntities to use Maps instead of Records for entity objects", () => {
+      const normalized = normalize(json.articles.items, arrayOf(schemas.article),{
+        getState:store.getState,
+        useMapsForEntityObjects:true
+      });
 
+      store.dispatch({
+        type:'articles',
+        payload:normalized
+      });
+
+      expect(normalized.entities.articles.get('49443').user.id).to.equal(192);
+      expect(normalized.entities.articles.get('49443').user.nickName).to.equal('Marc');
+
+    });
+
+    it("allows merging of new data", () => {
+      const normalized = normalize(json.articles.items, arrayOf(schemas.article),{
+        getState:store.getState,
+        useMapsForEntityObjects:true
+      });
+
+      const normalizedUpdate = normalize(jsonUpdate.articles.items, arrayOf(schemas.article),{
+        getState:store.getState,
+        useMapsForEntityObjects:true
+      });
+
+      const normalizedMerged = normalized.entities.articles.merge(normalizedUpdate.entities.articles);
+
+      expect(normalizedMerged).to.contain.key('49444');
+
+      const normalizedRecord = normalize(json.articles.items, arrayOf(schemas.article),{
+        getState:store.getState,
+        useMapsForEntityObjects:false
+      });
+
+      const normalizedUpdateRecord = normalize(jsonUpdate.articles.items, arrayOf(schemas.article),{
+        getState:store.getState,
+        useMapsForEntityObjects:false
+      });
+
+      try{
+        normalizedRecord.entities.articles.merge(normalizedUpdateRecord.entities.articles)
+        should().fail('We cannot merge Records when keys are added.');
+      }catch(err){}
 
     });
 
