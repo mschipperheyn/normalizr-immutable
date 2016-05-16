@@ -243,7 +243,8 @@ function unionOf(schema, options) {
  */
 function normalize(obj, schema, options = {
   getState: undefined,
-  useMapsForEntityObjects: false
+  useMapsForEntityObjects: false,
+  useProxyForResults:false
 }) {
 
   if (!lodashIsObject(obj) && !Array.isArray(obj)) {
@@ -267,7 +268,7 @@ function normalize(obj, schema, options = {
   let result = visit(obj, schema, bag, options);
 
   //we are now assuming that the returned "ids" are actually proxies if there is a getState method
-  if(options.getState){
+  if(options.getState && !options.useProxyForResults){
     results = result instanceof List?
       result.map(function(val){
         return val.id;

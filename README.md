@@ -15,6 +15,7 @@ It does mean that if you receive different levels of detail for a single type of
 If you do want to maintain entities across reducers, you have to be careful not to reference a reducer through the Proxy that has not been hydrated yet.
 * The Record object is now part of the method signature for Schema. Since it's not optional, it shouldn't be an option.
 * added a new option `useMapsForEntityObjects` to the `options` object, which defaults to `false`. When `useMapsForEntityObjects` is set to `true`, it will use a Map for the entity objects (e.g. articles). When set to `false`, it will use a Record for this. See the API description for more info.
+* added a new option `useProxyForResults` to the `options` object, which defaults to `false`. When `useProxyForResults` is set to `true`, it will set a Proxy *also* in the result key object or `List`. This will allow you to reference the object directly from the result.
 
 `normalize(json.articles.items, arrayOf(schemas.article),{getState: store.getState,useMapsForEntityObjects: true});`
 
@@ -83,7 +84,7 @@ If you defined an object reference on your to-be-normalized object, it will be p
 
 When you work with Lists and Maps, such as with loops, you should use es6 style `.forEach`, `.map`, etc. Using `for...in`, `for...of` and the like will not work.
 
-If you use the `useMapsForEntityObjects: true` option when you normalize an object, the entity objects will be stored in a map, to allow you to merge new values into them. Be aware, that Maps convert id keys to strings.
+If you use the `useMapsForEntityObjects: true` option when you normalize an object, the entity objects will be stored in a map, to allow you to merge new values into them. Be aware, that Map convert id keys to strings.
 
 ```javascript
 const normalized = {
@@ -368,6 +369,37 @@ Passed `schema` should be a nested object reflecting the structure of API respon
 You may optionally specify any of the following options:
 
 * `useMapsForEntityObjects` (boolean): When `useMapsForEntityObjects` is set to `true`, it will use a Map for the entity objects (e.g. articles). When set to `false`, it will use a Record for this, but this comes at the expense of not being able to merge new entity objects into the resulting Record object. The advantage of using Records, is that you have dot-property access, but if you use the Proxy, the impact on your code of `useMapsForEntityObjects: true` is really minimal. I recommend using it.
+
+* `useProxyForResults` (boolean): When `useProxyForResults` is set to `true`, it will set a Proxy *also* in the result key object or `List`. This will allow you to reference the object directly from the result.
+
+After normalization
+```javascript
+const normalized = normalize(json.articles.items, arrayOf(schemas.article),{
+  getState:store.getState,
+  useProxyForResults:true
+});
+
+const normalized = {//Record
+  entities:{
+    articles: {
+      1: {
+        id:1,
+        txt: 'Bla',
+        user: new Proxy({id: 15, key: 'users'})//reference to users
+      }
+    },
+    users:{//Record with keys: 15
+      15:{//Record with keys: id, name
+        id:15,
+        name:'Marc'
+      }
+    }
+  },
+  result:[new Proxy({id: 1, key: 'articles'})]
+};
+
+console.log(normalized.results.user.name);//Prints 'Marc'
+```
 
 * `assignEntity` (function): This is useful if your backend emits additional fields, such as separate ID fields, you'd like to delete in the normalized entity. See [the tests](https://github.com/gaearon/normalizr/blob/a0931d7c953b24f8f680b537b5f23a20e8483be1/test/index.js#L89-L200) and the [discussion](https://github.com/gaearon/normalizr/issues/10) for a usage example.
 

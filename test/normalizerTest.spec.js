@@ -269,6 +269,20 @@ describe("test normalizr", () => {
 
     });
 
+    it("allows accessing results through a proxy", () => {
+      const normalized = normalize(json.articles.items, arrayOf(schemas.article),{
+        getState:store.getState,
+        useProxyForResults:true
+      });
+
+      store.dispatch({
+        type:'articles',
+        payload:normalized
+      });
+
+      expect(normalized.result.get(0).user.nickName).to.equal('Diogenes');
+    });
+
     it("show processing of unions", () => {
 
     });
