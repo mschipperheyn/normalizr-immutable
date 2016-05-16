@@ -408,7 +408,7 @@ const normalized = {//Record
       }
     }
   },
-  result:[new Proxy({id: 1, key: 'articles'})]
+  result:new List([new Proxy({id: 1, key: 'articles'})])
 };
 
 console.log(normalized.result.get(0).user.name);//Prints 'Marc'
