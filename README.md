@@ -268,7 +268,7 @@ article.define({
 Returns the key of the schema.
 
 ```javascript
-const article = new Schema('articles');
+const article = new Schema('articles', Article);
 
 article.getKey();
 // articles
@@ -291,6 +291,13 @@ slugArticle.getIdAttribute();
 ### `Schema.prototype.getRecord()`
 
 Returns the Record of the schema.
+
+```javascript
+const article = new Schema('articles', Article);
+
+article.getRecord();
+// Article Record object
+```
 
 
 ### `arrayOf(schema, [options])`
