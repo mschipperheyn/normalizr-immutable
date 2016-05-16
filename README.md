@@ -6,13 +6,14 @@ We recommend reading the documentation for Normalizr and Immutable first, to get
 npm install --save normalizr-immutable
 ```
 
-### Changes to API!
+### Changes to API version 0.0.3!
 Based on user feedback I decided to make some changes to the API:
 * `reducerKey` is now an attribute for Schema. This makes it possible to reference entities that are stored in other reducers.
 
 It does mean that if you receive different levels of detail for a single type of entity across REST endpoints, or you want to maintain the original functionality of referencing entities within one reducer, you may need to maintain different Schema definitions for that entity.
 
 If you do want to maintain entities across reducers, you have to be careful not to reference a reducer through the Proxy that has not been hydrated yet.
+* added a new option `useMapsForEntityObjects` to the `options` object, which defaults to `false`. When `useMapsForEntityObjects` is set to `true`, it will use a Map for the entity objects (e.g. articles). When set to `false`, it will use a Record for this, but this comes at the expense of not being able to merge new entity objects into the resulting Record object. The advantage of using Records, is that you have dot-property access, but if you use the Proxy, the impact on your code of `useMapsForEntityObjects: true` is really minimal. I recommend using it. `normalize(json.articles.items, arrayOf(schemas.article),{getState: store.getState,useMapsForEntityObjects: true});`
 
 ### What does Normalizr-Immutable do?
 It normalizes a deeply nested json structure according to a schema for Redux apps and makes the resulting object immutable.
@@ -220,7 +221,7 @@ The way I turn a list of entities into Records (the ValueStructure Record) is a 
 
 This library has been developed as part of [Ology](https://www.ology.com.br), the social network for physicians.
 
-I removed harmony-reflect because it's a rather big library and more recent versions of v8 don't need it. I'm just maintaining the harmony-proxy shim. 
+I removed harmony-reflect because it's a rather big library and more recent versions of v8 don't need it. I'm just maintaining the harmony-proxy shim.
 
 ### TODO
 * API description
