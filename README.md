@@ -391,7 +391,6 @@ This library has been developed as part of [Ology](https://www.ology.com.br), th
 I removed harmony-reflect because it's a rather big library and more recent versions of v8 don't need it. I'm just maintaining the harmony-proxy shim.
 
 ### TODO
-* API description
 * Verify working of unionOf and valuesOf. I haven't really worked with that yet.
 
 ### Troubleshooting
