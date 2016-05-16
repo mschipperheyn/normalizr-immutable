@@ -38,16 +38,16 @@ Before normalization
 After normalization
 ```javascript
 const normalized = {
-  entities:{//Record
-    articles: {//Record
-      1: {//Record
+  entities:{//Record with keys: articles, users
+    articles: {//Record with keys: 1
+      1: {//Record with keys: id, txt, user
         id:1,
         txt: 'Bla',
         user: 15 //Optionally a proxy
       }
     },
-    users:{//Record
-      15:{//Record
+    users:{//Record with keys: 15
+      15:{//Record with keys: id, name
         id:15,
         name:'Marc'
       }
@@ -82,6 +82,29 @@ Normalizr-Immutable uses Records where possible in order to maintain object.prop
 If you defined an object reference on your to-be-normalized object, it will be processed as a Record if the property has a Schema defined for it. Otherwise, it will become a Map (and require object.get('property') style access).
 
 When you work with Lists and Maps, such as with loops, you should use es6 style `.forEach`, `.map`, etc. Using `for...in`, `for...of` and the like will not work.
+
+If you use the `useMapsForEntityObjects: true` option when you normalize an object, the entity objects will be stored in a map, to allow you to merge new values into them. Be aware, that Maps convert id keys to strings.
+
+```javascript
+const normalized = {
+  entities:{//Record with keys: articles, users
+    articles: {//Map with keys: '1'
+      '1': {//Record with keys: id, txt, user
+        id:1,
+        txt: 'Bla',
+        user: 15 //Optionally a proxy
+      }
+    },
+    users:{//Map with keys: '15'
+      '15':{//Record with keys: id, name
+        id:15,
+        name:'Marc'
+      }
+    }
+  },
+  result:[1]//List
+}
+```
 
 ### Creating a schema
 Creating a schema is the same as originally in Normalizr, but we now add a Record to the definition. Please note that you need to use arrayOf, unionOf and valuesOf of Normalizr-Immutable.
