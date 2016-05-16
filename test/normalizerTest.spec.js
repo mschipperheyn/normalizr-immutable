@@ -18,7 +18,6 @@ import jsonUpdate from './mocks/articles_update.json';
 import jsonObject from './mocks/article_comments.json';
 import jsonUsers from './mocks/users.json';
 import { normalize, Schema, arrayOf, NormalizedRecord } from '../src/index';
-import { normalize as normalize0/*, Schema as Schema0*/, arrayOf as arrayOf0 } from 'normalizr';
 
 import { Record, List, Map } from 'immutable';
 
@@ -45,9 +44,9 @@ const Article = new Record({
 });
 
 const schemas = {
-  article : new Schema('articles', { idAttribute: 'id', record: Article, reducerKey: reducerKey }),
-  user : new Schema('users', { idAttribute: 'id', record: User, reducerKey: reducerKey  }),
-  tag : new Schema('tags', { idAttribute: 'id', record: Tag, reducerKey: reducerKey  })
+  article : new Schema('articles', Article, { idAttribute: 'id', reducerKey: reducerKey }),
+  user : new Schema('users', User, { idAttribute: 'id', reducerKey: reducerKey  }),
+  tag : new Schema('tags', Tag, { idAttribute: 'id', reducerKey: reducerKey  })
 };
 
 schemas.article.define({
@@ -71,23 +70,6 @@ const store = createStore(combineReducers({
 ));
 
 describe("test normalizr", () => {
-    it("should work against the default normalizr", () => {
-
-      const schemas0 = {
-        article : new Schema('articles', { idAttribute: 'id', record: Article }),
-        user : new Schema('users', { idAttribute: 'id', record: User  }),
-        tag : new Schema('tags', { idAttribute: 'id', record: Tag  })
-      };
-
-      schemas0.article.define({
-        user: schemas.user,
-        tags: arrayOf0(schemas.tag)
-      });
-
-      const normalized = normalize0(json.articles.items, arrayOf0(schemas0.article),{});
-
-      expect0(normalized.entities).to.have.property('users');
-    });
 
     it("should work against the immutable normalizr", () => {
 
@@ -174,9 +156,9 @@ describe("test normalizr", () => {
     it("accesses objects across different reducers", () => {
 
       const mySchemas = {
-        article : new Schema('articles', { idAttribute: 'id', record: Article, reducerKey: reducerKey }),
-        user : new Schema('users', { idAttribute: 'id', record: User, reducerKey: 'userReducer' }),
-        tag : new Schema('tags', { idAttribute: 'id', record: Tag, reducerKey: reducerKey  })
+        article : new Schema('articles', Article, { idAttribute: 'id', reducerKey: reducerKey }),
+        user : new Schema('users', User, { idAttribute: 'id', reducerKey: 'userReducer' }),
+        tag : new Schema('tags', Tag, { idAttribute: 'id', reducerKey: reducerKey  })
       };
 
       mySchemas.article.define({
