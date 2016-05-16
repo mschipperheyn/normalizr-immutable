@@ -15,9 +15,22 @@ It does mean that if you receive different levels of detail for a single type of
 If you do want to maintain entities across reducers, you have to be careful not to reference a reducer through the Proxy that has not been hydrated yet.
 * The Record object is now part of the method signature for Schema. Since it's not optional, it shouldn't be an option.
 * added a new option `useMapsForEntityObjects` to the `options` object, which defaults to `false`. When `useMapsForEntityObjects` is set to `true`, it will use a Map for the entity objects (e.g. articles). When set to `false`, it will use a Record for this. See the API description for more info.
+
+```javascript
+normalize(json.articles.items, arrayOf(schemas.article),{
+  getState: store.getState,
+  useMapsForEntityObjects: true
+});
+```
+
 * added a new option `useProxyForResults` to the `options` object, which defaults to `false`. When `useProxyForResults` is set to `true`, it will set a Proxy *also* in the result key object or `List`. This will allow you to reference the object directly from the result.
 
-`normalize(json.articles.items, arrayOf(schemas.article),{getState: store.getState,useMapsForEntityObjects: true});`
+```javascript
+normalize(json.articles.items, arrayOf(schemas.article),{
+  getState: store.getState,
+  useProxyForResults: true
+});
+```
 
 ### What does Normalizr-Immutable do?
 It normalizes a deeply nested json structure according to a schema for Redux apps and makes the resulting object immutable.
