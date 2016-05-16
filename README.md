@@ -278,10 +278,6 @@ article.getKey();
 
 Returns the idAttribute of the schema.
 
-### `Schema.prototype.getRecord()`
-
-Returns the Record of the schema.
-
 ```javascript
 const article = new Schema('articles', Article);
 const slugArticle = new Schema('articles', Article, { idAttribute: 'slug' });
@@ -291,6 +287,11 @@ article.getIdAttribute();
 slugArticle.getIdAttribute();
 // slug
 ```
+
+### `Schema.prototype.getRecord()`
+
+Returns the Record of the schema.
+
 
 ### `arrayOf(schema, [options])`
 
