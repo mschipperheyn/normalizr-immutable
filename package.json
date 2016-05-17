@@ -33,7 +33,6 @@
   },
   "dependencies": {
     "harmony-proxy": "^1.0.1",
-    "harmony-reflect": "^1.4.6",
     "immutable": "^3.7.6",
     "lodash": "^4.2.1",
     "lodash-es": "^4.2.1",
