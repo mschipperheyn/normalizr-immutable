@@ -22,7 +22,8 @@ export function loadArticles(){
 
       const normalized = normalize(json.articles.items, arrayOf(articleSchema),{
         getState,
-        reducerKey:'articleReducer'
+        useMapsForEntityObjects: true,
+        useProxyForResults:true
       });
 
       dispatch(processArticles(normalized));

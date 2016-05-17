@@ -7,9 +7,9 @@ import User from './userRecord';
 import Tag from './tagRecord';
 
 const schemas = {
-  article   : new Schema('articles', { idAttribute: 'id', record: Article }),
-  user      : new Schema('users', { idAttribute: 'id', record: User  }),
-  tag       : new Schema('tags', { idAttribute: 'id', record: Tag  }),
+  article   : new Schema('articles', Article, { reducerKey:'articleReducer' }),
+  user      : new Schema('users', User, { reducerKey:'articleReducer' }),
+  tag       : new Schema('tags', Tag, { reducerKey:'articleReducer' }),
 };
 
 schemas.article.define({

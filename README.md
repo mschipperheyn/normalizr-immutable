@@ -6,13 +6,31 @@ We recommend reading the documentation for Normalizr and Immutable first, to get
 npm install --save normalizr-immutable
 ```
 
-### Changes to API!
+### Changes to API version 0.0.3!
 Based on user feedback I decided to make some changes to the API:
 * `reducerKey` is now an attribute for Schema. This makes it possible to reference entities that are stored in other reducers.
 
 It does mean that if you receive different levels of detail for a single type of entity across REST endpoints, or you want to maintain the original functionality of referencing entities within one reducer, you may need to maintain different Schema definitions for that entity.
 
 If you do want to maintain entities across reducers, you have to be careful not to reference a reducer through the Proxy that has not been hydrated yet.
+* The Record object is now part of the method signature for Schema. Since it's not optional, it shouldn't be an option.
+* added a new option `useMapsForEntityObjects` to the `options` object, which defaults to `false`. When `useMapsForEntityObjects` is set to `true`, it will use a Map for the entity objects (e.g. articles). When set to `false`, it will use a Record for this. See the API description for more info.
+
+```javascript
+normalize(json.articles.items, arrayOf(schemas.article),{
+  getState: store.getState,
+  useMapsForEntityObjects: true
+});
+```
+
+* added a new option `useProxyForResults` to the `options` object, which defaults to `false`. When `useProxyForResults` is set to `true`, it will set a Proxy *also* in the result key object or `List`. This will allow you to reference the object directly from the result.
+
+```javascript
+normalize(json.articles.items, arrayOf(schemas.article),{
+  getState: store.getState,
+  useProxyForResults: true
+});
+```
 
 ### What does Normalizr-Immutable do?
 It normalizes a deeply nested json structure according to a schema for Redux apps and makes the resulting object immutable.
@@ -34,16 +52,16 @@ Before normalization
 After normalization
 ```javascript
 const normalized = {
-  entities:{//Record
-    articles: {//Record
-      1: {//Record
+  entities:{//Record with keys: articles, users
+    articles: {//Record with keys: 1
+      1: {//Record with keys: id, txt, user
         id:1,
         txt: 'Bla',
         user: 15 //Optionally a proxy
       }
     },
-    users:{//Record
-      15:{//Record
+    users:{//Record with keys: 15
+      15:{//Record with keys: id, name
         id:15,
         name:'Marc'
       }
@@ -79,6 +97,29 @@ If you defined an object reference on your to-be-normalized object, it will be p
 
 When you work with Lists and Maps, such as with loops, you should use es6 style `.forEach`, `.map`, etc. Using `for...in`, `for...of` and the like will not work.
 
+If you use the `useMapsForEntityObjects: true` option when you normalize an object, the entity objects will be stored in a map, to allow you to merge new values into them. Be aware, that Map convert id keys to strings.
+
+```javascript
+const normalized = {
+  entities:{//Record with keys: articles, users
+    articles: {//Map with keys: '1'
+      '1': {//Record with keys: id, txt, user
+        id:1,
+        txt: 'Bla',
+        user: 15 //Optionally a proxy
+      }
+    },
+    users:{//Map with keys: '15'
+      '15':{//Record with keys: id, name
+        id:15,
+        name:'Marc'
+      }
+    }
+  },
+  result:[1]//List
+}
+```
+
 ### Creating a schema
 Creating a schema is the same as originally in Normalizr, but we now add a Record to the definition. Please note that you need to use arrayOf, unionOf and valuesOf of Normalizr-Immutable.
 
@@ -104,9 +145,9 @@ const Article = new Record({
 });
 
 const schemas = {
-  article : new Schema('articles', { idAttribute: 'id', record: Article }),
-  user    : new Schema('users', { idAttribute: 'id', record: User  }),
-  tag     : new Schema('tags', { idAttribute: 'id', record: Tag  })
+  article : new Schema('articles', Article),
+  user    : new Schema('users', User),
+  tag     : new Schema('tags', Tag)
 };
 
 schemas.article.define({
@@ -178,9 +219,9 @@ In order to use the proxy, you will need to give it access to the actual object 
 
 ```javascript
 const schemas = {
-  article : new Schema('articles', { idAttribute: 'id', record: Article, reducerKey: 'articleReducer' }),
-  user    : new Schema('users', { idAttribute: 'id', record: User, reducerKey: 'userReducer'  }),
-  tag     : new Schema('tags', { idAttribute: 'id', record: Tag, reducerKey: 'tagReducer'   })
+  article : new Schema('articles', Article, { idAttribute: 'id', reducerKey: 'articleReducer' }),
+  user    : new Schema('users', User, { idAttribute: 'id', reducerKey: 'userReducer'  }),
+  tag     : new Schema('tags', Tag, { idAttribute: 'id', reducerKey: 'tagReducer'   })
 };
 
 
@@ -199,8 +240,7 @@ export function loadArticles(){
     [...]
 
     const normalized = normalize(json, schema,{
-      getState,
-      reducerKey:'articleReducer'
+      getState
     });
 
     [...]
@@ -213,6 +253,202 @@ export function loadArticles(){
 ### Browser support
 This library has currently only been tested against React-Native, so I would like to hear about experiences in the browser. For a list of browsers with appropriate Proxy support [http://caniuse.com/#feat=proxy](http://caniuse.com/#feat=proxy).
 
+## API Reference
+This API Reference borrows heavily from the original Normalizr project.
+
+### `new Schema(key, [options])`
+
+Schema lets you define a type of entity returned by your API.  
+This should correspond to model in your server code.  
+
+The `key` parameter lets you specify the name of the dictionary for this kind of entity.  
+The `record` parameter lets you specify the Record that defines your entity.
+
+```javascript
+const User = new Record({
+  id:null,
+  nickName: null,
+});
+
+const Article = new Record({
+  //base comment
+  id:null,
+  txt:null,
+  author:new User(),
+});
+
+const article = new Schema('articles', Article);
+
+// You can use a custom id attribute
+const article = new Schema('articles', Article, { idAttribute: 'slug' });
+
+// Or you can specify a function to infer it
+function generateSlug(entity) { /* ... */ }
+const article = new Schema('articles', Article { idAttribute: generateSlug });
+```
+
+### `Schema.prototype.define(nestedSchema)`
+
+Lets you specify relationships between different entities.  
+
+```javascript
+const article = new Schema('articles', Article);
+const user = new Schema('users', User);
+
+article.define({
+  author: user
+});
+```
+
+### `Schema.prototype.getKey()`
+
+Returns the key of the schema.
+
+```javascript
+const article = new Schema('articles', Article);
+
+article.getKey();
+// articles
+```
+
+### `Schema.prototype.getIdAttribute()`
+
+Returns the idAttribute of the schema.
+
+```javascript
+const article = new Schema('articles', Article);
+const slugArticle = new Schema('articles', Article, { idAttribute: 'slug' });
+
+article.getIdAttribute();
+// id
+slugArticle.getIdAttribute();
+// slug
+```
+
+### `Schema.prototype.getRecord()`
+
+Returns the Record of the schema.
+
+```javascript
+const article = new Schema('articles', Article);
+
+article.getRecord();
+// Article Record object
+```
+
+
+### `arrayOf(schema, [options])`
+
+Describes an array of the schema passed as argument.
+
+```javascript
+const article = new Schema('articles', Article);
+const user = new Schema('users', User);
+
+article.define({
+  author: user,
+  contributors: arrayOf(user)
+});
+```
+
+If the array contains entities with different schemas, you can use the `schemaAttribute` option to specify which schema to use for each entity:
+
+```javascript
+const article = new Schema('articles', Article);
+const image = new Schema('images', Image);
+const video = new Schema('videos', Video);
+const asset = {
+  images: image,
+  videos: video
+};
+
+// You can specify the name of the attribute that determines the schema
+article.define({
+  assets: arrayOf(asset, { schemaAttribute: 'type' })
+});
+
+// Or you can specify a function to infer it
+function inferSchema(entity) { /* ... */ }
+article.define({
+  assets: arrayOf(asset, { schemaAttribute: inferSchema })
+});
+```
+
+### `normalize(obj, schema, [options])`
+
+Normalizes object according to schema.  
+Passed `schema` should be a nested object reflecting the structure of API response.
+
+You may optionally specify any of the following options:
+
+* `useMapsForEntityObjects` (boolean): When `useMapsForEntityObjects` is set to `true`, it will use a Map for the entity objects (e.g. articles). When set to `false`, it will use a Record for this, but this comes at the expense of not being able to merge new entity objects into the resulting Record object. The advantage of using Records, is that you have dot-property access, but if you use the Proxy, the impact on your code of `useMapsForEntityObjects: true` is really minimal. I recommend using it.
+
+* `useProxyForResults` (boolean): When `useProxyForResults` is set to `true`, it will set a Proxy *also* in the result key object or `List`. This will allow you to reference the object directly from the result.
+
+```javascript
+const normalized = normalize(json.articles.items, arrayOf(schemas.article),{
+  getState:store.getState,
+  useProxyForResults:true
+});
+
+//resulting object looks like this
+const normalized = {//Record
+  entities:{
+    articles: {
+      1: {
+        id:1,
+        txt: 'Bla',
+        user: new Proxy({id: 15, key: 'users'})//reference to users
+      }
+    },
+    users:{//Record with keys: 15
+      15:{//Record with keys: id, name
+        id:15,
+        name:'Marc'
+      }
+    }
+  },
+  result:new List([new Proxy({id: 1, key: 'articles'})])
+};
+
+console.log(normalized.result.get(0).user.name);//Prints 'Marc'
+```
+
+* `assignEntity` (function): This is useful if your backend emits additional fields, such as separate ID fields, you'd like to delete in the normalized entity. See [the tests](https://github.com/gaearon/normalizr/blob/a0931d7c953b24f8f680b537b5f23a20e8483be1/test/index.js#L89-L200) and the [discussion](https://github.com/gaearon/normalizr/issues/10) for a usage example.
+
+* `mergeIntoEntity` (function): You can use this to resolve conflicts when merging entities with the same key. See [the test](https://github.com/gaearon/normalizr/blob/47ed0ecd973da6fa7c8b2de461e35b293ae52047/test/index.js#L132-L197) and the [discussion](https://github.com/gaearon/normalizr/issues/34) for a usage example.
+
+```javascript
+const article = new Schema('articles', Article);
+const user = new Schema('users', User);
+
+article.define({
+  author: user,
+  contributors: arrayOf(user),
+  meta: {
+    likes: arrayOf({
+      user: user
+    })
+  }
+});
+
+// ...
+
+// Normalize one article object
+const json = { id: 1, author: ... };
+const normalized = normalize(json, article);
+
+// Normalize an array of article objects
+const arr = [{ id: 1, author: ... }, ...]
+const normalized = normalize(arr, arrayOf(article));
+
+// Normalize an array of article objects, referenced by an object key:
+const wrappedArr = { articles: [{ id: 1, author: ... }, ...] }
+const normalized = normalize(wrappedArr, {
+  articles: arrayOf(article)
+});
+```
+
 ### Final remarks
 The use of the Proxy as a way of accessing the entity structure transparently, would be totally possible also in the original Normalizr library as well. I'm still studying on ways to override functions in a non class structure. If anyone has any suggestions on this, I could spin off the Proxy functionality into a separate library that could serve both libraries.
 
@@ -220,11 +456,9 @@ The way I turn a list of entities into Records (the ValueStructure Record) is a 
 
 This library has been developed as part of [Ology](https://www.ology.com.br), the social network for physicians.
 
-I removed harmony-reflect because it's a rather big library and more recent versions of v8 don't need it. I'm just maintaining the harmony-proxy shim. 
+I removed harmony-reflect because it's a rather big library and more recent versions of v8 don't need it. I'm just maintaining the harmony-proxy shim.
 
 ### TODO
-* API description
-* Examples
 * Verify working of unionOf and valuesOf. I haven't really worked with that yet.
 
 ### Troubleshooting
