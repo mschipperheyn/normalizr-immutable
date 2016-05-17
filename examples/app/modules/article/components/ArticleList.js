@@ -9,7 +9,6 @@ import { View, Text, ListView, StyleSheet } from 'react-native';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
-import WallList from '../modules/wall/components/WallList';
 import Article from './../../../components/wallpost/Article';
 
 import * as articleActions from '../modules/article/actions/articleActions';
