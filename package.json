@@ -1,6 +1,6 @@
 {
   "name": "normalizr-immutable",
-  "version": "0.0.3-rc",
+  "version": "0.0.3",
   "description": "Normalizes JSON to immutable Records according to schema for Redux applications and provide proxied access to properties",
   "main": "lib/index.js",
   "private": false,
