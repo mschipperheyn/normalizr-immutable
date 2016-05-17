@@ -20,7 +20,11 @@ export function loadArticles(){
     .then(response => response.json())
     .then(json => {
 
-      const normalized = normalize(json.articles.items, arrayOf(articleSchema),getState);
+      const normalized = normalize(json.articles.items, arrayOf(articleSchema),{
+        getState,
+        useMapsForEntityObjects: true,
+        useProxyForResults:true
+      });
 
       dispatch(processArticles(normalized));
     })
