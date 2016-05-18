@@ -14,7 +14,7 @@ import UnionSchema from './UnionSchema';
 import lodashIsEqual from 'lodash/isEqual';
 import lodashIsObject from 'lodash/isObject';
 
-const NormalizedRecord = new Record({entities:null, result: null});
+const NormalizedRecord = new Record({entities:null, result: null}, 'NormalizedRecord');
 const PolymorphicMapper = new Record({id:null, schema: null});
 
 function defaultAssignEntity(normalized, key, entity) {
