@@ -133,7 +133,7 @@ describe("test normalizr", () => {
       })
 
       expect(normalized.entities.articles[49443].user.id).to.equal(192);
-      expect(normalized.entities.articles.get(50001).user.get('id')).to.equals(193);
+      expect(normalized.entities.articles.get(50001).user.get('id')).to.equal(193);
       expect(normalized.entities.articles.get(50002).user.nickName).to.equal('Marc');
 
     });
@@ -199,7 +199,7 @@ describe("test normalizr", () => {
       });
 
       expect(normalized.entities.articles[49443].user.id).to.equal(192);
-      expect(normalized.entities.articles.get(49443).user.get('id')).to.equals(192);
+      expect(normalized.entities.articles.get(49443).user.get('id')).to.equal(192);
       expect(normalized.entities.articles.get(49443).user.nickName).to.equal('Marc');
 
     });
@@ -281,6 +281,52 @@ describe("test normalizr", () => {
       });
 
       expect(normalized.result.get(0).user.nickName).to.equal('Diogenes');
+    });
+
+    it("should allow late binding of the result list", () => {
+      const normalized = normalize(json.articles.items, arrayOf(schemas.article),{
+        useProxyForResults:true,
+        getState:store.getState,
+        proxyWithLateBinding:true
+      });
+
+      store.dispatch({
+        type:'articles',
+        payload:normalized
+      })
+
+      expect(normalized.result.get(0)).to.equal(49441);
+      expect(normalized.result.get(0).call(store.getState).nickName).to.equal('Marc');
+
+    });
+
+    it("should produce test output", () => {
+      let normalized = normalize(json.articles.items, arrayOf(schemas.article),{
+        getState:store.getState,
+        useMapsForEntityObjects:true,
+        debug:true
+      });
+
+      normalized = normalize(json.articles.items, arrayOf(schemas.article),{
+        getState:store.getState,
+        useMapsForEntityObjects:false,
+        debug:true
+      });
+
+      normalized = normalize(json.articles.items, arrayOf(schemas.article),{
+        getState:store.getState,
+        useMapsForEntityObjects:true,
+        useProxyForResults:false
+        debug:true
+      });
+
+      normalized = normalize(json.articles.items, arrayOf(schemas.article),{
+        getState:store.getState,
+        useMapsForEntityObjects:false,
+        useProxyForResults:true
+        debug:true
+      });
+
     });
 
     it("show processing of unions", () => {

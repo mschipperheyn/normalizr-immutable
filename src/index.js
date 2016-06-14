@@ -37,11 +37,26 @@ function proxy(id, schema, bag, options){
       const state = options.getState();
 
       if(state[schema.getReducerKey()].entities){
+
+        if(options.debug){
+          if(typeof state[schema.getReducerKey()].entities[schema.getKey()] === 'undefined'){
+            console.debug(`Normalizr: ${schema.getKey()} not found on reducer ${schema.getReducerKey()}`);
+          }else if(options.useMapsForEntityObjects){
+            if(state[schema.getReducerKey()].entities[schema.getKey()].findKey(target.id + '') === null)
+              console.debug(`Normalizr: ${schema.getKey()}-${target.id} not found on reducer ${schema.getReducerKey()}`);
+          }else{
+            if(Object.keys(state[schema.getReducerKey()].entities[schema.getKey()]).indexOf(target.id) === -1)
+              console.debug(`Normalizr: ${schema.getKey()}-${target.id} not found on reducer ${schema.getReducerKey()}`);
+          }
+        }
+
         if(options.useMapsForEntityObjects){
           return state[schema.getReducerKey()].entities[schema.getKey()].get(target.id + '')[name];
         }else{
           return state[schema.getReducerKey()].entities[schema.getKey()][target.id][name];
         }
+      }else if(options.debug){
+        console.debug(`Normalizr: reducer ${schema.getReducerKey()} doesn't have entities key. Are you sure you configured the correct reducer?`);
       }
       return undefined;
     },
@@ -244,8 +259,12 @@ function unionOf(schema, options) {
 function normalize(obj, schema, options = {
   getState: undefined,
   useMapsForEntityObjects: false,
-  useProxyForResults:false
+  useProxyForResults:false,
+  debug:false
 }) {
+
+  if(options.debug)
+    console.debug(`Normalizr: getState ${options.getState}, useMapsForEntityObjects:${options.useMapsForEntityObjects}, useProxyForResults:${options.useProxyForResults}, debug:${options.debug}`);
 
   if (!lodashIsObject(obj) && !Array.isArray(obj)) {
     throw new Error('Normalize accepts an object or an array as its input.');
