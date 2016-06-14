@@ -23,17 +23,17 @@ import { Record, List, Map } from 'immutable';
 
 const reducerKey = 'myReducer';
 
-const Tag = new Record({
+const Tag = Record({
   id:null,
   label: null
 });
 
-const User = new Record({
+const User = Record({
   id:null,
   nickName: null,
 });
 
-const Article = new Record({
+const Article = Record({
   //base comment
   id:null,
   txt:null,
@@ -271,6 +271,42 @@ describe("test normalizr", () => {
         normalizedRecord.entities.articles.merge(normalizedUpdateRecord.entities.articles)
         should().fail('We cannot merge Records when keys are added.');
       }catch(err){}
+
+    });
+
+    it("allows deep merging of new data", () => {
+      const normalized = normalize(json.articles.items, arrayOf(schemas.article),{
+        getState:store.getState,
+        useMapsForEntityObjects:true
+      });
+
+      const normalizedUpdate = normalize(jsonUpdate.articles.items, arrayOf(schemas.article),{
+        getState:store.getState,
+        useMapsForEntityObjects:true
+      });
+
+      let normalizedMerged = normalized.entities.merge(normalizedUpdate.entities);
+
+      expect(normalizedMerged.articles).to.contain.key('49444');
+      expect(normalizedMerged.articles).to.contain.key('49441');
+
+    });
+
+    it("allows deep merging of new data using deepMerge", () => {
+      const normalized = normalize(json.articles.items, arrayOf(schemas.article),{
+        getState:store.getState,
+        useMapsForEntityObjects:true
+      });
+
+      const normalizedUpdate = normalize(jsonUpdate.articles.items, arrayOf(schemas.article),{
+        getState:store.getState,
+        useMapsForEntityObjects:true
+      });
+
+      normalizedMerged = normalized.entities.mergeDeep(normalizedUpdate.entities);
+
+      expect(normalizedMerged.articles).to.contain.key('49441');
+      expect(normalizedMerged.articles).to.contain.key('49444');
 
     });
 

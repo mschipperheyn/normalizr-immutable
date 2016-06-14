@@ -14,8 +14,8 @@ import UnionSchema from './UnionSchema';
 import lodashIsEqual from 'lodash/isEqual';
 import lodashIsObject from 'lodash/isObject';
 
-const NormalizedRecord = new Record({entities:null, result: null}, 'NormalizedRecord');
-const PolymorphicMapper = new Record({id:null, schema: null});
+const NormalizedRecord = Record({entities:null, result: null}, 'NormalizedRecord');
+const PolymorphicMapper = Record({id:null, schema: null});
 
 function defaultAssignEntity(normalized, key, entity) {
   normalized[key] = entity;
@@ -120,8 +120,8 @@ function visitRecord(obj, schema, bag, options){
     }
   }
 
-  const Record = schema.getRecord();
-  return new Record(normalized);
+  const RRecord = schema.getRecord();
+  return new RRecord(normalized);
 }
 
 function defaultMapper(iterableSchema, itemSchema, bag, options) {
@@ -322,13 +322,13 @@ function normalize(obj, schema, options = {
     if(options.useMapsForEntityObjects){
       entityStructure[schemaKey] = new Map(bag[schemaKey]);
     }else{
-      const ValueStructure = new Record(bag[schemaKey]);
+      const ValueStructure = Record(bag[schemaKey]);
       entityStructure[schemaKey] = new ValueStructure({});
     }
 
   }
 
-  const EntityStructure = new Record(keyStructure);
+  const EntityStructure = Record(keyStructure);
 
   entities = new EntityStructure(entityStructure);
 
