@@ -63,8 +63,13 @@ function myReducer(state = initialState, action) {
   return state;
 };
 
+function inboxReducer(state = initialState, action) {
+  return state;
+};
+
 const store = createStore(combineReducers({
-  myReducer
+  myReducer,
+  inboxReducer
 }),{},applyMiddleware(
   // loggerMiddleware()
 ));
@@ -301,31 +306,31 @@ describe("test normalizr", () => {
     });
 
     it("should produce test output", () => {
-      let normalized = normalize(json.articles.items, arrayOf(schemas.article),{
+      const altSchemas = {
+        article : new Schema('articles', Article, { idAttribute: 'id', reducerKey: reducerKey }),
+        user : new Schema('users', User, { idAttribute: 'id', reducerKey: 'inboxReducer'  }),
+        tag : new Schema('tags', Tag, { idAttribute: 'id', reducerKey: reducerKey  })
+      };
+
+      altSchemas.article.define({
+        user: altSchemas.user,
+        tags: arrayOf(altSchemas.tag),
+        comments:arrayOf(altSchemas.article)
+      });
+
+      let normalized = normalize(json.articles.items, arrayOf(altSchemas.article),{
         getState:store.getState,
         useMapsForEntityObjects:true,
+        useProxyForResults:true,
         debug:true
       });
 
-      normalized = normalize(json.articles.items, arrayOf(schemas.article),{
-        getState:store.getState,
-        useMapsForEntityObjects:false,
-        debug:true
-      });
+      store.dispatch({
+        type:'articles',
+        payload:normalized
+      })
 
-      normalized = normalize(json.articles.items, arrayOf(schemas.article),{
-        getState:store.getState,
-        useMapsForEntityObjects:true,
-        useProxyForResults:false
-        debug:true
-      });
-
-      normalized = normalize(json.articles.items, arrayOf(schemas.article),{
-        getState:store.getState,
-        useMapsForEntityObjects:false,
-        useProxyForResults:true
-        debug:true
-      });
+      console.log(normalized.result.get(0).user.nickName);
 
     });
 

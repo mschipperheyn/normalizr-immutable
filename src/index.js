@@ -34,29 +34,46 @@ function proxy(id, schema, bag, options){
       if(name === 'id')
         return target.id;
 
-      const state = options.getState();
+      try{
+        const state = options.getState();
 
-      if(state[schema.getReducerKey()].entities){
+        if(typeof state[schema.getReducerKey()] === 'undefined')
+          throw new Error(`No such reducer: ${schema.getReducerKey()}`);
 
-        if(options.debug){
-          if(typeof state[schema.getReducerKey()].entities[schema.getKey()] === 'undefined'){
-            console.debug(`Normalizr: ${schema.getKey()} not found on reducer ${schema.getReducerKey()}`);
-          }else if(options.useMapsForEntityObjects){
-            if(state[schema.getReducerKey()].entities[schema.getKey()].findKey(target.id + '') === null)
-              console.debug(`Normalizr: ${schema.getKey()}-${target.id} not found on reducer ${schema.getReducerKey()}`);
-          }else{
-            if(Object.keys(state[schema.getReducerKey()].entities[schema.getKey()]).indexOf(target.id) === -1)
-              console.debug(`Normalizr: ${schema.getKey()}-${target.id} not found on reducer ${schema.getReducerKey()}`);
+        if(state[schema.getReducerKey()].entities){
+
+          if(options.debug){
+            if(typeof state[schema.getReducerKey()].entities[schema.getKey()] === 'undefined'){
+              console.info(`Normalizr: ${schema.getKey()} not found on reducer ${schema.getReducerKey()}`);
+            }else if(options.useMapsForEntityObjects){
+              if(state[schema.getReducerKey()].entities[schema.getKey()].findKey(ky => ky === target.id + '') === null)
+                console.info(`Normalizr: ${schema.getKey()}-${target.id} not found on reducer ${schema.getReducerKey()}`);
+            }else{
+              if(Object.keys(state[schema.getReducerKey()].entities[schema.getKey()]).indexOf(target.id) === -1)
+                console.info(`Normalizr: ${schema.getKey()}-${target.id} not found on reducer ${schema.getReducerKey()}`);
+            }
           }
+
+          if(options.useMapsForEntityObjects){
+            return state[schema.getReducerKey()].entities[schema.getKey()].get(target.id + '')[name];
+          }else{
+            return state[schema.getReducerKey()].entities[schema.getKey()][target.id][name];
+          }
+        }else if(options.debug){
+          console.info(`Normalizr: reducer ${schema.getReducerKey()} doesn't have entities key. Are you sure you configured the correct reducer?`);
         }
 
-        if(options.useMapsForEntityObjects){
-          return state[schema.getReducerKey()].entities[schema.getKey()].get(target.id + '')[name];
-        }else{
-          return state[schema.getReducerKey()].entities[schema.getKey()][target.id][name];
-        }
-      }else if(options.debug){
-        console.debug(`Normalizr: reducer ${schema.getReducerKey()} doesn't have entities key. Are you sure you configured the correct reducer?`);
+      }catch(err){
+
+        console.error({
+          message:'Error processing Proxy',
+          id:target.id,
+          entity:target.key,
+          key:name,
+          reducer:schema.getReducerKey()
+        });
+
+        throw err;
       }
       return undefined;
     },
@@ -264,7 +281,7 @@ function normalize(obj, schema, options = {
 }) {
 
   if(options.debug)
-    console.debug(`Normalizr: getState ${options.getState}, useMapsForEntityObjects:${options.useMapsForEntityObjects}, useProxyForResults:${options.useProxyForResults}, debug:${options.debug}`);
+    console.info(`Normalizr: getState ${options.getState}, useMapsForEntityObjects:${options.useMapsForEntityObjects}, useProxyForResults:${options.useProxyForResults}, debug:${options.debug}`);
 
   if (!lodashIsObject(obj) && !Array.isArray(obj)) {
     throw new Error('Normalize accepts an object or an array as its input.');
@@ -275,7 +292,7 @@ function normalize(obj, schema, options = {
   }
 
   if(options.getState && typeof Proxy === 'undefined'){
-    console.warn('Proxies not supported in this environment');
+    console.info('Proxies not supported in this environment');
   }
 
   let bag = {};
@@ -312,6 +329,7 @@ function normalize(obj, schema, options = {
   }
 
   const EntityStructure = new Record(keyStructure);
+
   entities = new EntityStructure(entityStructure);
 
   return new NormalizedRecord({
