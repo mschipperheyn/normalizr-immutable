@@ -28,69 +28,88 @@ function proxy(id, schema, bag, options){
   if(typeof Proxy === 'undefined')
     return id;
 
-  return new Proxy({id: id, key: schema.getKey()},{
-    get(target, name, receiver) {
+  const curriedProxy = function(getState){
 
-      if(name === 'id')
-        return target.id;
+    const prxy = new Proxy({
+      id: id,
+      key: schema.getKey()
+    },{
 
-      try{
-        const state = options.getState();
+      get(target, name, receiver) {
 
-        if(typeof state[schema.getReducerKey()] === 'undefined')
-          throw new Error(`No such reducer: ${schema.getReducerKey()}`);
+        if(name === 'id' || typeof getState === 'undefined')
+          return target.id;
 
-        if(state[schema.getReducerKey()].entities){
+        try{
+          const state = getState();
 
-          if(options.debug){
-            if(typeof state[schema.getReducerKey()].entities[schema.getKey()] === 'undefined'){
-              console.info(`Normalizr: ${schema.getKey()} not found on reducer ${schema.getReducerKey()}`);
-            }else if(options.useMapsForEntityObjects){
-              if(state[schema.getReducerKey()].entities[schema.getKey()].findKey(ky => ky === target.id + '') === null)
-                console.info(`Normalizr: ${schema.getKey()}-${target.id} not found on reducer ${schema.getReducerKey()}`);
-            }else{
-              if(Object.keys(state[schema.getReducerKey()].entities[schema.getKey()]).indexOf(target.id) === -1)
-                console.info(`Normalizr: ${schema.getKey()}-${target.id} not found on reducer ${schema.getReducerKey()}`);
+          if(typeof state[schema.getReducerKey()] === 'undefined')
+            throw new Error(`No such reducer: ${schema.getReducerKey()}`);
+
+          if(state[schema.getReducerKey()].entities){
+
+            if(options.debug){
+              if(typeof state[schema.getReducerKey()].entities[schema.getKey()] === 'undefined'){
+                console.info(`Normalizr: ${schema.getKey()} not found on reducer ${schema.getReducerKey()}`);
+              }else if(options.useMapsForEntityObjects){
+                if(state[schema.getReducerKey()].entities[schema.getKey()].findKey(ky => ky === target.id + '') === null)
+                  console.info(`Normalizr: ${schema.getKey()}-${target.id} not found on reducer ${schema.getReducerKey()}`);
+              }else{
+                if(Object.keys(state[schema.getReducerKey()].entities[schema.getKey()]).indexOf(target.id) === -1)
+                  console.info(`Normalizr: ${schema.getKey()}-${target.id} not found on reducer ${schema.getReducerKey()}`);
+              }
             }
+
+            if(options.useMapsForEntityObjects){
+              return state[schema.getReducerKey()].entities[schema.getKey()].get(target.id + '')[name];
+            }else{
+              return state[schema.getReducerKey()].entities[schema.getKey()][target.id][name];
+            }
+          }else if(options.debug){
+            console.info(`Normalizr: reducer ${schema.getReducerKey()} doesn't have entities key. Are you sure you configured the correct reducer?`);
           }
 
-          if(options.useMapsForEntityObjects){
-            return state[schema.getReducerKey()].entities[schema.getKey()].get(target.id + '')[name];
-          }else{
-            return state[schema.getReducerKey()].entities[schema.getKey()][target.id][name];
-          }
-        }else if(options.debug){
-          console.info(`Normalizr: reducer ${schema.getReducerKey()} doesn't have entities key. Are you sure you configured the correct reducer?`);
+        }catch(err){
+
+          console.error(err,{
+            message:'Error processing Proxy',
+            id:target.id,
+            entity:target.key,
+            key:name,
+            reducer:schema.getReducerKey()
+          });
+
+          throw err;
         }
+        return undefined;
+      },
+      set(k,v){
+        throw new Error('Not supported');
+      },
+      has(name){
 
-      }catch(err){
+        if(typeof getState === 'undefined')
+          return false;
 
-        console.error({
-          message:'Error processing Proxy',
-          id:target.id,
-          entity:target.key,
-          key:name,
-          reducer:schema.getReducerKey()
-        });
-
-        throw err;
+        if(options.useMapsForEntityObjects){
+          return getState()[schema.getReducerKey()].entities[schema.getKey()].get(id + '').has(name);
+        }else{
+          return getState()[schema.getReducerKey()].entities[schema.getKey()][id].has(name);
+        }
+      },
+      valueOf() {
+        return {id};
+      },
+      toString(){
+        return JSON.stringify({id: id, key: schema.getKey()});
       }
-      return undefined;
-    },
-    set(k,v){
-      throw new Error('Not supported');
-    },
-    has(name){
-      if(options.useMapsForEntityObjects){
-        return options.getState()[schema.getReducerKey()].entities[schema.getKey()].get(id + '').has(name);
-      }else{
-        return options.getState()[schema.getReducerKey()].entities[schema.getKey()][id].has(name);
-      }
-    },
-    valueOf : function () {
-      return 0;
-    }
-  });
+    });
+
+    return prxy;
+  }
+
+  return curriedProxy(options.getState);
+
 }
 
 function visitObject(obj, schema, bag, options) {
@@ -197,7 +216,7 @@ function visitEntity(entity, entitySchema, bag, options) {
   let normalized = visitRecord(entity, entitySchema, bag, options);
   bag[entityKey][id] = mergeIntoEntity(stored, normalized, entityKey);
 
-  if(options.getState){
+  if(options.getState || options.useProxy){
     return proxy(id, entitySchema, bag, options);
   }
 
@@ -276,12 +295,13 @@ function unionOf(schema, options) {
 function normalize(obj, schema, options = {
   getState: undefined,
   useMapsForEntityObjects: false,
+  useProxy:true,
   useProxyForResults:false,
   debug:false
 }) {
 
   if(options.debug)
-    console.info(`Normalizr: getState ${options.getState}, useMapsForEntityObjects:${options.useMapsForEntityObjects}, useProxyForResults:${options.useProxyForResults}, debug:${options.debug}`);
+    console.info(`Normalizr: getState ${typeof options.getState}, useProxy:${options.useProxy}, useMapsForEntityObjects:${options.useMapsForEntityObjects}, useProxyForResults:${options.useProxyForResults}, debug:${options.debug}`);
 
   if (!lodashIsObject(obj) && !Array.isArray(obj)) {
     throw new Error('Normalize accepts an object or an array as its input.');

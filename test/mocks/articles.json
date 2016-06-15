@@ -33,6 +33,23 @@
             "label" : "Normalizr"
           }
         ]
+      },
+      {
+        "user" : {
+          "nickName" : "Marc",
+          "id" : 192
+        },
+        "id" : 49449,
+        "txt" : "bla die bla 2",
+        "tags": [{
+            "id" : 5,
+            "label" : "React"
+          },
+          {
+            "id" : 6,
+            "label" : "Normalizr"
+          }
+        ]
       }
 
     ],

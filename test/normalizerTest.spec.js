@@ -58,8 +58,11 @@ schemas.article.define({
 const initialState = new NormalizedRecord();
 
 function myReducer(state = initialState, action) {
-  if(action.type === 'articles')
+  if(action.type === 'articles'){
     return state.merge(action.payload);
+  }else if(action.type === 'clear'){
+    return initialState;
+  }
   return state;
 };
 
@@ -82,7 +85,7 @@ describe("test normalizr", () => {
 
       expect(normalized).to.have.property('entities');
       expect(normalized).to.have.property('result');
-      expect(normalized.result).to.have.size(3);
+      expect(normalized.result).to.have.size(4);
       expect(normalized.entities).to.have.property('users');
       expect(normalized.entities.users).to.have.property(193);
       expect(normalized.entities).to.have.property('articles');
@@ -94,7 +97,8 @@ describe("test normalizr", () => {
     it("should allow a proxy function to lazy load the reference", () => {
 
       const normalized = normalize(json.articles.items, arrayOf(schemas.article),{
-        getState:store.getState
+        getState:store.getState,
+        debug:false
       });
 
       store.dispatch({
@@ -111,7 +115,8 @@ describe("test normalizr", () => {
     it("show dynamic state changes after the reference has passed and not just a passed static state", () => {
 
       let normalized = normalize(json.articles.items, arrayOf(schemas.article),{
-        getState:store.getState
+        getState:store.getState,
+        debug:false
       });
 
       store.dispatch({
@@ -129,7 +134,8 @@ describe("test normalizr", () => {
     it("should process a single object", () => {
 
       const normalized = normalize(jsonObject, schemas.article,{
-        getState:store.getState
+        getState:store.getState,
+        debug:false
       });
 
       store.dispatch({
@@ -146,7 +152,8 @@ describe("test normalizr", () => {
     it("should process iterables", () => {
 
       const normalized = normalize(json.articles.items, arrayOf(schemas.article),{
-        getState:store.getState
+        getState:store.getState,
+        debug:false
       });
 
       store.dispatch({
@@ -211,7 +218,8 @@ describe("test normalizr", () => {
 
     it("equals Objects as different Proxies pass is(r1,r2)", () => {
       const normalized = normalize(json.articles.items, arrayOf(schemas.article),{
-        getState:store.getState
+        getState:store.getState,
+        debug:false
       });
 
       store.dispatch({
@@ -275,6 +283,11 @@ describe("test normalizr", () => {
     });
 
     it("allows deep merging of new data", () => {
+
+      store.dispatch({
+        type:'clear'
+      });
+
       const normalized = normalize(json.articles.items, arrayOf(schemas.article),{
         getState:store.getState,
         useMapsForEntityObjects:true
@@ -285,28 +298,39 @@ describe("test normalizr", () => {
         useMapsForEntityObjects:true
       });
 
-      let normalizedMerged = normalized.entities.merge(normalizedUpdate.entities);
+      const normalizedMerged = normalized.entities.merge(normalizedUpdate.entities);
 
       expect(normalizedMerged.articles).to.contain.key('49444');
       expect(normalizedMerged.articles).to.contain.key('49441');
+      //this is a record that only exists in normalized and not in normalizedUpdate
+      expect(normalizedMerged.articles).to.not.contain.key('49449');
 
     });
 
     it("allows deep merging of new data using deepMerge", () => {
+
+      store.dispatch({
+        type:'clear'
+      });
+
       const normalized = normalize(json.articles.items, arrayOf(schemas.article),{
         getState:store.getState,
-        useMapsForEntityObjects:true
+        useMapsForEntityObjects:true,
+        debug:true
       });
 
       const normalizedUpdate = normalize(jsonUpdate.articles.items, arrayOf(schemas.article),{
         getState:store.getState,
-        useMapsForEntityObjects:true
+        useMapsForEntityObjects:true,
+        debug:true
       });
-
-      normalizedMerged = normalized.entities.mergeDeep(normalizedUpdate.entities);
+      
+      const normalizedMerged = normalized.entities.mergeDeep(normalizedUpdate.entities);
 
       expect(normalizedMerged.articles).to.contain.key('49441');
       expect(normalizedMerged.articles).to.contain.key('49444');
+      expect(normalizedMerged.articles).to.contain.key('49449');
+      expect(normalizedMerged.articles.get('49443').tags.get(0).id).to.equal(19);
 
     });
 
@@ -326,18 +350,29 @@ describe("test normalizr", () => {
 
     it("should allow late binding of the result list", () => {
       const normalized = normalize(json.articles.items, arrayOf(schemas.article),{
+        getState:undefined,
         useProxyForResults:true,
-        getState:store.getState,
-        proxyWithLateBinding:true
+        useProxy:true,
+        debug:true
       });
 
       store.dispatch({
         type:'articles',
         payload:normalized
-      })
+      });
 
-      expect(normalized.result.get(0)).to.equal(49441);
-      expect(normalized.result.get(0).call(store.getState).nickName).to.equal('Marc');
+      const statifiedResult = function(state){
+        return normalized;
+      };
+
+      const res = statiefiedResult(store.getState);
+
+      console.log(res);
+
+      expect(normalized.result.get(0)(store.getState).txt).to.be.a('string');
+      expect(normalized.result.get(0)(store.getState).user.nickName).to.equal('Marc');
+      expect(normalized.result.get(0)()).to.equal(49441);
+
 
     });
 
@@ -358,7 +393,7 @@ describe("test normalizr", () => {
         getState:store.getState,
         useMapsForEntityObjects:true,
         useProxyForResults:true,
-        debug:true
+        debug:false
       });
 
       store.dispatch({
