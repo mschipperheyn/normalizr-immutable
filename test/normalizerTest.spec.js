@@ -256,12 +256,22 @@ describe("test normalizr", () => {
         useMapsForEntityObjects:true
       });
 
+      store.dispatch({
+        type:'articles',
+        payload:normalized
+      });
+
       const normalizedUpdate = normalize(jsonUpdate.articles.items, arrayOf(schemas.article),{
         getState:store.getState,
         useMapsForEntityObjects:true
       });
 
       const normalizedMerged = normalized.entities.articles.merge(normalizedUpdate.entities.articles);
+
+      store.dispatch({
+        type:'articles',
+        payload:normalizedMerged
+      });
 
       expect(normalizedMerged).to.contain.key('49444');
 
@@ -298,12 +308,12 @@ describe("test normalizr", () => {
         useMapsForEntityObjects:true
       });
 
-      const normalizedMerged = normalized.entities.merge(normalizedUpdate.entities);
+      const normalizedMerged = normalized.mergeIn(['entities'],normalizedUpdate.entities);
 
-      expect(normalizedMerged.articles).to.contain.key('49444');
-      expect(normalizedMerged.articles).to.contain.key('49441');
+      expect(normalizedMerged.entities.articles).to.contain.key('49444');
+      expect(normalizedMerged.entities.articles).to.contain.key('49441');
       //this is a record that only exists in normalized and not in normalizedUpdate
-      expect(normalizedMerged.articles).to.not.contain.key('49449');
+      expect(normalizedMerged.entities.articles).to.not.contain.key('49449');
 
     });
 
@@ -316,21 +326,21 @@ describe("test normalizr", () => {
       const normalized = normalize(json.articles.items, arrayOf(schemas.article),{
         getState:store.getState,
         useMapsForEntityObjects:true,
-        debug:true
+        debug:false
       });
 
       const normalizedUpdate = normalize(jsonUpdate.articles.items, arrayOf(schemas.article),{
         getState:store.getState,
         useMapsForEntityObjects:true,
-        debug:true
+        debug:false
       });
-      
-      const normalizedMerged = normalized.entities.mergeDeep(normalizedUpdate.entities);
 
-      expect(normalizedMerged.articles).to.contain.key('49441');
-      expect(normalizedMerged.articles).to.contain.key('49444');
-      expect(normalizedMerged.articles).to.contain.key('49449');
-      expect(normalizedMerged.articles.get('49443').tags.get(0).id).to.equal(19);
+      const normalizedMerged = normalized.mergeDeepIn(['entities'],normalizedUpdate.entities);
+
+      expect(normalizedMerged.entities.articles).to.contain.key('49441');
+      expect(normalizedMerged.entities.articles).to.contain.key('49444');
+      expect(normalizedMerged.entities.articles).to.contain.key('49449');
+      expect(normalizedMerged.entities.articles.get('49443').tags.get(0).id).equal(19);
 
     });
 

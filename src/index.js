@@ -4,7 +4,7 @@
 import { Record, Map, List, Iterable } from 'immutable';
 
 //Shim for new Proxy instead of Proxy.create
-import Proxy from 'harmony-proxy';
+// import Proxy from 'harmony-proxy';
 //Should patch proxy to work properly
 // import Reflect from 'harmony-reflect';
 
@@ -16,6 +16,8 @@ import lodashIsObject from 'lodash/isObject';
 
 const NormalizedRecord = Record({entities:null, result: null}, 'NormalizedRecord');
 const PolymorphicMapper = Record({id:null, schema: null});
+
+
 
 function defaultAssignEntity(normalized, key, entity) {
   normalized[key] = entity;
@@ -99,10 +101,10 @@ function proxy(id, schema, bag, options){
       },
       valueOf() {
         return {id};
-      },
+      },/*
       toString(){
         return JSON.stringify({id: id, key: schema.getKey()});
-      }
+      }*/
     });
 
     return prxy;
