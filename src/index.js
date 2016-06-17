@@ -3,8 +3,6 @@
 // import { arrayOf, valuesOf, unionOf } from 'normalizr';
 import { Record, Map, List, Iterable } from 'immutable';
 
-//Shim for new Proxy instead of Proxy.create
-// import Proxy from 'harmony-proxy';
 //Should patch proxy to work properly
 // import Reflect from 'harmony-reflect';
 
@@ -30,9 +28,14 @@ function proxy(id, schema, bag, options){
   if(typeof Proxy === 'undefined')
     return id;
 
+  let ProxyShim = Proxy;
+  // Check if we actually have new-style Proxies
+  if(Proxy && typeof Proxy.create === 'function')
+    ProxyShim = require('harmony-proxy');
+
   const curriedProxy = function(getState){
 
-    const prxy = new Proxy({
+    const prxy = new ProxyShim({
       id: id,
       key: schema.getKey()
     },{
@@ -314,7 +317,9 @@ function normalize(obj, schema, options = {
   }
 
   if(options.getState && typeof Proxy === 'undefined'){
-    console.info('Proxies not supported in this environment');
+    options.useProxy = false;
+    options.usProxyForResults = false;
+    console.error('Proxies not supported in this environment');
   }
 
   let bag = {};
