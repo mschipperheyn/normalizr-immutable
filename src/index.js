@@ -49,24 +49,30 @@ function proxy(id, schema, bag, options){
           if(typeof state[schema.getReducerKey()] === 'undefined')
             throw new Error(`No such reducer: ${schema.getReducerKey()}`);
 
-          if(state[schema.getReducerKey()].get('entities')){
+          //For now we want to assume that the reducer root can be an object as wel as immutable :-(
+
+          const entityRoot = typeof state[schema.getReducerKey()] === 'object'?
+            state[schema.getReducerKey()]['entities'] :
+            state[schema.getReducerKey()].get('entities');
+
+          if(entityRoot){
 
             if(options.debug){
-              if(typeof state[schema.getReducerKey()].get('entities')[schema.getKey()] === 'undefined'){
+              if(typeof entityRoot[schema.getKey()] === 'undefined'){
                 console.info(`Normalizr: ${schema.getKey()} not found on reducer ${schema.getReducerKey()}`);
               }else if(options.useMapsForEntityObjects){
-                if(state[schema.getReducerKey()].get('entities')[schema.getKey()].findKey(ky => ky === target.id + '') === null)
+                if(entityRoot[schema.getKey()].findKey(ky => ky === target.id + '') === null)
                   console.info(`Normalizr: ${schema.getKey()}-${target.id} not found on reducer ${schema.getReducerKey()}`);
               }else{
-                if(Object.keys(state[schema.getReducerKey()].get('entities')[schema.getKey()]).indexOf(target.id) === -1)
+                if(Object.keys(entityRoot[schema.getKey()]).indexOf(target.id) === -1)
                   console.info(`Normalizr: ${schema.getKey()}-${target.id} not found on reducer ${schema.getReducerKey()}`);
               }
             }
 
             if(options.useMapsForEntityObjects){
-              return state[schema.getReducerKey()].get('entities').get(schema.getKey()).get(target.id + '').get(name);
+              return entityRoot.get(schema.getKey()).get(target.id + '').get(name);
             }else{
-              return state[schema.getReducerKey()].get('entities').get(schema.getKey()).get(target.id + '')[name];
+              return entityRoot.get(schema.getKey())[target.id][name];
             }
           }else if(options.debug){
             console.info(`Normalizr: reducer ${schema.getReducerKey()} doesn't have entities key. Are you sure you configured the correct reducer?`);
@@ -94,10 +100,14 @@ function proxy(id, schema, bag, options){
         if(typeof getState === 'undefined')
           return false;
 
+        const entityRoot = typeof getState()[schema.getReducerKey()] === 'object'?
+          state[schema.getReducerKey()]['entities'] :
+          state[schema.getReducerKey()].get('entities');
+
         if(options.useMapsForEntityObjects){
-          return getState()[schema.getReducerKey()].get('entities').get(schema.getKey()).get(id + '').has(name);
+          return entityRoot.get(schema.getKey()).get(id + '').has(name);
         }else{
-          return getState()[schema.getReducerKey()].get('entities').get(schema.getKey())[id].has(name);
+          return entityRoot.get(schema.getKey())[id].has(name);
         }
       },
       valueOf() {
