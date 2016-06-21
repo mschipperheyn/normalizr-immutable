@@ -317,6 +317,34 @@ describe("test normalizr", () => {
 
     });
 
+    it("allows using a Map as a root for a redux state", () => {
+
+      function reducer(state = new Map(), action) {
+        if(action.type === 'articles'){
+          return state.merge(action.payload);
+        }
+        return state;
+      };
+
+      const myStore = createStore(combineReducers({
+        reducer,
+      }),{});
+
+      const normalized = normalize(json.articles.items, arrayOf(schemas.article),{
+        getState:store.getState,
+        useMapsForEntityObjects:true
+      });
+
+      myStore.dispatch({
+        type:'articles',
+        payload:normalized
+      });
+
+      expect(normalized.entities.articles.get('49443').user.id).to.equal(192);
+      expect(normalized.entities.articles.get('49443').user.nickName).to.equal('Marc');
+
+    });
+
     it("allows deep merging of new data using deepMerge", () => {
 
       store.dispatch({
@@ -337,10 +365,16 @@ describe("test normalizr", () => {
 
       const normalizedMerged = normalized.mergeDeepIn(['entities'],normalizedUpdate.entities);
 
+      store.dispatch({
+        type:'articles',
+        payload:normalizedMerged
+      });
+
       expect(normalizedMerged.entities.articles).to.contain.key('49441');
       expect(normalizedMerged.entities.articles).to.contain.key('49444');
       expect(normalizedMerged.entities.articles).to.contain.key('49449');
       expect(normalizedMerged.entities.articles.get('49443').tags.get(0).id).equal(19);
+      expect(normalizedMerged.entities.articles.get('49443').tags.get(0).label).equal('React Native');
 
     });
 

@@ -1,7 +1,7 @@
 // Based on Normalizr 2.0.1
 'use strict';
 // import { arrayOf, valuesOf, unionOf } from 'normalizr';
-import { Record, Map, List, Iterable } from 'immutable';
+import { Record, Map, List, Iterable, Collection } from 'immutable';
 
 //Should patch proxy to work properly
 // import Reflect from 'harmony-reflect';
@@ -51,9 +51,9 @@ function proxy(id, schema, bag, options){
 
           //For now we want to assume that the reducer root can be an object as wel as immutable :-(
 
-          const entityRoot = typeof state[schema.getReducerKey()] === 'object'?
-            state[schema.getReducerKey()]['entities'] :
-            state[schema.getReducerKey()].get('entities');
+          const entityRoot = typeof state[schema.getReducerKey()] instanceof Collection.Keyed?
+            state[schema.getReducerKey()].get('entities') :
+            state[schema.getReducerKey()]['entities'];
 
           if(entityRoot){
 
@@ -100,9 +100,9 @@ function proxy(id, schema, bag, options){
         if(typeof getState === 'undefined')
           return false;
 
-        const entityRoot = typeof getState()[schema.getReducerKey()] === 'object'?
-          state[schema.getReducerKey()]['entities'] :
-          state[schema.getReducerKey()].get('entities');
+        const entityRoot = typeof state[schema.getReducerKey()] instanceof Collection.Keyed?
+          state[schema.getReducerKey()].get('entities') :
+          state[schema.getReducerKey()]['entities'];
 
         if(options.useMapsForEntityObjects){
           return entityRoot.get(schema.getKey()).get(id + '').has(name);
@@ -327,7 +327,7 @@ function normalize(obj, schema, options = {
   if(options.getState && typeof Proxy === 'undefined'){
     options.useProxy = false;
     options.usProxyForResults = false;
-    console.error('Proxies not supported in this environment');
+    console.log('Normalizr: Proxies not supported in this environment');
   }
 
   let bag = {};
