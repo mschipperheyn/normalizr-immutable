@@ -385,6 +385,8 @@ You may optionally specify any of the following options:
 
 * `useProxyForResults` (boolean): When `useProxyForResults` is set to `true`, it will set a Proxy *also* in the result key object or `List`. This will allow you to reference the object directly from the result.
 
+* `debug` (boolean): Gives more detailed output on Proxy behaviour and helps you issues with accessing your reducer.
+
 ```javascript
 const normalized = normalize(json.articles.items, arrayOf(schemas.article),{
   getState:store.getState,
