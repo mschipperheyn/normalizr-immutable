@@ -59,7 +59,7 @@ const initialState = new NormalizedRecord();
 
 function myReducer(state = initialState, action) {
   if(action.type === 'articles'){
-    return state.merge(action.payload);
+    return action.payload;
   }else if(action.type === 'clear'){
     return initialState;
   }
@@ -78,6 +78,14 @@ const store = createStore(combineReducers({
 ));
 
 describe("test normalizr", () => {
+
+    before(function() {
+
+      store.dispatch({
+        type:'clear'
+      });
+
+    });
 
     it("should work against the immutable normalizr", () => {
 
@@ -151,10 +159,6 @@ describe("test normalizr", () => {
 
     it("should process iterables", () => {
 
-      store.dispatch({
-        type:'clear'
-      });
-
       const normalized = normalize(json.articles.items, arrayOf(schemas.article),{
         getState:store.getState,
         debug:false
@@ -170,10 +174,6 @@ describe("test normalizr", () => {
     });
 
     it("should allow you to marshal the object through toJS()", () => {
-
-      store.dispatch({
-        type:'clear'
-      });
 
       const normalized = normalize(json.articles.items, arrayOf(schemas.article),{
         getState:store.getState,
@@ -294,6 +294,7 @@ describe("test normalizr", () => {
     });
 
     it("allows merging of new data", () => {
+
       const normalized = normalize(json.articles.items, arrayOf(schemas.article),{
         getState:store.getState,
         useMapsForEntityObjects:true
@@ -337,13 +338,14 @@ describe("test normalizr", () => {
 
     it("allows deep merging of new data", () => {
 
-      store.dispatch({
-        type:'clear'
-      });
-
       const normalized = normalize(json.articles.items, arrayOf(schemas.article),{
         getState:store.getState,
         useMapsForEntityObjects:true
+      });
+
+      store.dispatch({
+        type:'articles',
+        payload:normalized
       });
 
       const normalizedUpdate = normalize(jsonUpdate.articles.items, arrayOf(schemas.article),{
@@ -352,6 +354,11 @@ describe("test normalizr", () => {
       });
 
       const normalizedMerged = normalized.mergeIn(['entities'],normalizedUpdate.entities);
+
+      store.dispatch({
+        type:'articles',
+        payload:normalizedMerged
+      });
 
       expect(normalizedMerged.entities.articles).to.contain.key('49444');
       expect(normalizedMerged.entities.articles).to.contain.key('49441');
@@ -390,16 +397,18 @@ describe("test normalizr", () => {
 
     it("allows deep merging of new data using deepMerge", () => {
 
-      store.dispatch({
-        type:'clear'
-      });
-
       const normalized = normalize(json.articles.items, arrayOf(schemas.article),{
         getState:store.getState,
         useMapsForEntityObjects:true,
         debug:false
       });
 
+      store.dispatch({
+        type:'articles',
+        payload:normalized
+      });
+
+      //json update contains a new object (object id 49449), and a list that has an item removed (tag id 5)
       const normalizedUpdate = normalize(jsonUpdate.articles.items, arrayOf(schemas.article),{
         getState:store.getState,
         useMapsForEntityObjects:true,

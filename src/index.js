@@ -80,8 +80,8 @@ function proxy(id, schema, bag, options){
 
         }catch(err){
 
-          console.error(err,{
-            message:'Error processing Proxy',
+          console.error(err.stack,{
+            message:'Normalizr:Error processing Proxy',
             id:target.id,
             entity:target.key,
             key:name,
