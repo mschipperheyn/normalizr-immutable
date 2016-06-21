@@ -112,10 +112,7 @@ function proxy(id, schema, bag, options){
       },
       valueOf() {
         return {id};
-      },/*
-      toString(){
-        return JSON.stringify({id: id, key: schema.getKey()});
-      }*/
+      }
     });
 
     return prxy;

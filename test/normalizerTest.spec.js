@@ -444,6 +444,21 @@ describe("test normalizr", () => {
       expect(normalized.result.get(0).user.nickName).to.equal('Diogenes');
     });
 
+    it("prints proxy references as full data objects", () => {
+      const normalized = normalize(json.articles.items, arrayOf(schemas.article),{
+        getState:store.getState,
+        useProxyForResults:true
+      });
+
+      store.dispatch({
+        type:'articles',
+        payload:normalized
+      });
+
+      expect(normalized.result.get(0).user.toString()).to.equal('Record { "id": 193, "nickName": Diogenes }');
+      expect(JSON.stringify(normalized.result.get(0).user.toJS())).to.equal('{"id":193,"nickName":"Diogenes"}');
+    });
+
     it("should allow late binding of the result list", () => {
       const normalized = normalize(json.articles.items, arrayOf(schemas.article),{
         getState:undefined,
