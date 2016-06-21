@@ -151,6 +151,10 @@ describe("test normalizr", () => {
 
     it("should process iterables", () => {
 
+      store.dispatch({
+        type:'clear'
+      });
+
       const normalized = normalize(json.articles.items, arrayOf(schemas.article),{
         getState:store.getState,
         debug:false
@@ -163,6 +167,45 @@ describe("test normalizr", () => {
 
       expect(normalized.entities.articles[49443].tags).to.have.size(2);
       expect(normalized.entities.articles.get(49443).tags.get(0).label).to.equal("React");
+    });
+
+    it("should allow you to marshal the object through toJS()", () => {
+
+      store.dispatch({
+        type:'clear'
+      });
+
+      const normalized = normalize(json.articles.items, arrayOf(schemas.article),{
+        getState:store.getState,
+        debug:false
+      });
+
+      store.dispatch({
+        type:'articles',
+        payload:normalized
+      });
+
+      const js = normalized.toJS();
+
+      expect(normalized.entities.articles.get(49443).tags.get(0).label).to.equal("React");
+      expect(js.entities.articles['49443'].tags[0].label).to.equal("React");
+
+      const normalizedAgain = normalize(json.articles.items, arrayOf(schemas.article),{
+        getState:store.getState,
+        debug:false
+      });
+
+      store.dispatch({
+        type:'clear'
+      });
+
+      store.dispatch({
+        type:'articles',
+        payload:normalizedAgain
+      });
+
+      expect(normalizedAgain.entities.articles.get(49443).tags.get(0).label).to.equal("React");
+
     });
 
     it("accesses objects across different reducers", () => {
