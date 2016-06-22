@@ -80,15 +80,14 @@ function proxy(id, schema, bag, options){
 
         }catch(err){
 
-          console.error(err.stack,{
+          console.log(err.stack,{
             message:'Normalizr:Error processing Proxy',
             id:target.id,
             entity:target.key,
             key:name,
             reducer:schema.getReducerKey()
           });
-
-          throw err;
+          
         }
         return undefined;
       },
