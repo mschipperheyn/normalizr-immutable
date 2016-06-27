@@ -516,6 +516,39 @@ describe("test normalizr", () => {
 
     });
 
+    it("should allow the state root and entities root to be an object or null", () => {
+
+      const startState = {
+        entities:null
+      };
+
+      const reducer = function myReducer(state = startState, action) {
+        switch(action.type){
+          case 'articles':
+            return action.payload;
+          default:
+            return state;
+        }
+      };
+
+      const myStore = createStore(combineReducers({
+        reducer
+      }),{});
+
+      const normalized = normalize(json.articles.items, arrayOf(schemas.article),{
+        getState:myStore.getState,
+        useMapsForEntityObjects:true
+      });
+
+      myStore.dispatch({
+        type:'articles',
+        payload:normalized
+      });
+
+      //TODO
+
+    });
+
     it("show processing of unions", () => {
 
     });
