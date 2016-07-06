@@ -476,13 +476,15 @@ describe("test normalizr", () => {
         return normalized;
       };
 
-      const res = statiefiedResult(store.getState);
+      const res = statifiedResult(store.getState);
 
       console.log(res);
 
+      //too complicated
       expect(normalized.result.get(0)(store.getState).txt).to.be.a('string');
       expect(normalized.result.get(0)(store.getState).user.nickName).to.equal('Marc');
       expect(normalized.result.get(0)()).to.equal(49441);
+
 
 
     });

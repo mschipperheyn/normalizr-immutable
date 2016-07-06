@@ -1,0 +1,141 @@
+0 info it worked if it ends with ok
+1 verbose cli [ '/Users/marcschipperheijn/.nvm/versions/node/v6.1.0/bin/node',
+1 verbose cli   '/Users/marcschipperheijn/.nvm/versions/node/v6.1.0/bin/npm',
+1 verbose cli   'publish',
+1 verbose cli   './',
+1 verbose cli   '--tag',
+1 verbose cli   'beta' ]
+2 info using npm@3.9.6
+3 info using node@v6.1.0
+4 verbose publish [ './' ]
+5 silly cache add args [ './', null ]
+6 verbose cache add spec ./
+7 silly cache add parsed spec Result {
+7 silly cache add   raw: './',
+7 silly cache add   scope: null,
+7 silly cache add   name: null,
+7 silly cache add   rawSpec: './',
+7 silly cache add   spec: '/Users/Shared/java/projects/react/projects/normalizr-immutable',
+7 silly cache add   type: 'directory' }
+8 verbose addLocalDirectory /Users/marcschipperheijn/.npm/normalizr-immutable/0.0.4-beta9/package.tgz not in flight; packing
+9 verbose correctMkdir /Users/marcschipperheijn/.npm correctMkdir not in flight; initializing
+10 info lifecycle normalizr-immutable@0.0.4-beta9~prepublish: normalizr-immutable@0.0.4-beta9
+11 verbose lifecycle normalizr-immutable@0.0.4-beta9~prepublish: unsafe-perm in lifecycle true
+12 verbose lifecycle normalizr-immutable@0.0.4-beta9~prepublish: PATH: /Users/marcschipperheijn/.nvm/versions/node/v6.1.0/lib/node_modules/npm/bin/node-gyp-bin:/Users/Shared/java/projects/react/projects/normalizr-immutable/node_modules/.bin:/Users/marcschipperheijn/.nvm/versions/node/v6.1.0/bin:/Users/marcschipperheijn/.nvm/versions/node/v6.1.0/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/local/sbin:/opt/X11/bin:/usr/local/git/bin
+13 verbose lifecycle normalizr-immutable@0.0.4-beta9~prepublish: CWD: /Users/Shared/java/projects/react/projects/normalizr-immutable
+14 silly lifecycle normalizr-immutable@0.0.4-beta9~prepublish: Args: [ '-c', 'npm run build' ]
+15 silly lifecycle normalizr-immutable@0.0.4-beta9~prepublish: Returned: code: 0  signal: null
+16 verbose tar pack [ '/Users/marcschipperheijn/.npm/normalizr-immutable/0.0.4-beta9/package.tgz',
+16 verbose tar pack   '/Users/Shared/java/projects/react/projects/normalizr-immutable' ]
+17 verbose tarball /Users/marcschipperheijn/.npm/normalizr-immutable/0.0.4-beta9/package.tgz
+18 verbose folder /Users/Shared/java/projects/react/projects/normalizr-immutable
+19 verbose addLocalTarball adding from inside cache /Users/marcschipperheijn/.npm/normalizr-immutable/0.0.4-beta9/package.tgz
+20 verbose correctMkdir /Users/marcschipperheijn/.npm correctMkdir not in flight; initializing
+21 silly cache afterAdd normalizr-immutable@0.0.4-beta9
+22 verbose afterAdd /Users/marcschipperheijn/.npm/normalizr-immutable/0.0.4-beta9/package/package.json not in flight; writing
+23 verbose correctMkdir /Users/marcschipperheijn/.npm correctMkdir not in flight; initializing
+24 verbose afterAdd /Users/marcschipperheijn/.npm/normalizr-immutable/0.0.4-beta9/package/package.json written
+25 silly publish { name: 'normalizr-immutable',
+25 silly publish   version: '0.0.4-beta9',
+25 silly publish   description: 'Normalizes JSON to immutable Records according to schema for Redux applications and provide proxied access to properties',
+25 silly publish   main: 'lib/index.js',
+25 silly publish   private: false,
+25 silly publish   repository:
+25 silly publish    { type: 'git',
+25 silly publish      url: 'git+https://github.com/mschipperheyn/normalizr-immutable.git' },
+25 silly publish   keywords: [ 'redux', 'normalize', 'proxy', 'json' ],
+25 silly publish   files: [ 'dist', 'lib', 'src' ],
+25 silly publish   author: { name: 'Marc Schipperheyn' },
+25 silly publish   license: 'BSD',
+25 silly publish   bugs: { url: 'https://github.com/mschipperheyn/normalizr-immutable/issues' },
+25 silly publish   homepage: 'https://github.com/mschipperheyn/normalizr-immutable',
+25 silly publish   scripts:
+25 silly publish    { test: 'mocha --compilers js:babel-register --harmony-proxies --opts test/mocha.opts test/**/*.spec.js',
+25 silly publish      prebuild: 'rimraf dist lib',
+25 silly publish      build: 'webpack && babel src --out-dir lib',
+25 silly publish      prepublish: 'npm run build' },
+25 silly publish   dependencies:
+25 silly publish    { 'harmony-proxy': '^1.0.1',
+25 silly publish      immutable: '^3.8.1',
+25 silly publish      lodash: '^4.2.1',
+25 silly publish      'lodash-es': '^4.2.1',
+25 silly publish      normalizr: '^2.0.2' },
+25 silly publish   devDependencies:
+25 silly publish    { 'babel-cli': '^6.8.0',
+25 silly publish      'babel-loader': '^6.2.4',
+25 silly publish      'babel-plugin-transform-decorators-legacy': '^1.3.4',
+25 silly publish      'babel-preset-es2015': '^6.6.0',
+25 silly publish      'babel-preset-react-native': '^1.7.0',
+25 silly publish      'babel-preset-react-native-stage-0': '^1.0.1',
+25 silly publish      'babel-preset-stage-1': '^6.5.0',
+25 silly publish      chai: '^3.5.0',
+25 silly publish      'chai-immutable': '^1.5.4',
+25 silly publish      mocha: '^2.4.5',
+25 silly publish      redux: '^3.5.2',
+25 silly publish      'redux-logger': '^2.6.1',
+25 silly publish      rimraf: '^2.5.2',
+25 silly publish      webpack: '^1.13.0' },
+25 silly publish   readme: 'Normalizr-Immutable is an opiniated immutable version of Dan Abramov\'s [Normalizr](https://github.com/gaearon/normalizr) using Facebook\'s [Immutable](https://facebook.github.io/immutable-js).\nWe recommend reading the documentation for Normalizr and Immutable first, to get a basic idea of the intent of these concepts.\n\n### Installation\n```\nnpm install --save normalizr-immutable\n```\n\n### Changes to API version 0.0.3!\nBased on user feedback I decided to make some changes to the API:\n* `reducerKey` is now an attribute for Schema. This makes it possible to reference entities that are stored in other reducers.\n\nIt does mean that if you receive different levels of detail for a single type of entity across REST endpoints, or you want to maintain the original functionality of referencing entities within one reducer, you may need to maintain different Schema definitions for that entity.\n\nIf you do want to maintain entities across reducers, you have to be careful not to reference a reducer through the Proxy that has not been hydrated yet.\n* The Record object is now part of the method signature for Schema. Since it\'s not optional, it shouldn\'t be an option.\n* added a new option `useMapsForEntityObjects` to the `options` object, which defaults to `false`. When `useMapsForEntityObjects` is set to `true`, it will use a Map for the entity objects (e.g. articles). When set to `false`, it will use a Record for this. See the API description for more info.\n\n```javascript\nnormalize(json.articles.items, arrayOf(schemas.article),{\n  getState: store.getState,\n  useMapsForEntityObjects: true\n});\n```\n\n* added a new option `useProxyForResults` to the `options` object, which defaults to `false`. When `useProxyForResults` is set to `true`, it will set a Proxy *also* in the result key object or `List`. This will allow you to reference the object directly from the result.\n\n```javascript\nnormalize(json.articles.items, arrayOf(schemas.article),{\n  getState: store.getState,\n  useProxyForResults: true\n});\n```\n\n### What does Normalizr-Immutable do?\nIt normalizes a deeply nested json structure according to a schema for Redux apps and makes the resulting object immutable.\nIt does this in a way that preserves the ability to reference objects using traditional javascript object notation.\nSo, after normalizing an object, you can still reference the tree in the normalized object like a traditional javascript object:\n\nBefore normalization\n```json\n"article": {\n  "id": 1,\n  "txt": "Bla",\n  "user":{\n    "id":15,\n    "name":"Marc"\n  }\n}\n```\n\nAfter normalization\n```javascript\nconst normalized = {\n  entities:{//Record with keys: articles, users\n    articles: {//Record with keys: 1\n      1: {//Record with keys: id, txt, user\n        id:1,\n        txt: \'Bla\',\n        user: 15 //Optionally a proxy\n      }\n    },\n    users:{//Record with keys: 15\n      15:{//Record with keys: id, name\n        id:15,\n        name:\'Marc\'\n      }\n    }\n  },\n  result:[1]//List\n}\n```\n\nIf you use Redux, it optionally, allows you to reference the normalized object through a proxy. This should also work in other environments, but this has not been tested.\nThis allows you to say:\n\n```\nnormalized.entities.articles[1].user.name\n```\n\n### How is this different from Normalizr?\n* Normalizr-Immutable is immutable\n* Normalizr puts an id in the place of the object reference, Normalizr-Immutable (optionally) places a proxy there so you can keep using the object as if nothing changed.\n* Normalizr-Immutable adds an extra attribute to a schema: Record. This is an Immutable Record that defines the contract for the referenced \'class\'.\n\n### What are the benefits of Normalizr-Immutable?\n* Because each Schema uses a Record to define its contract, there is a clearly understandable and visible contract that any developer can read and understand.\n* Because Record defines defaults, any unexpected changes to the incoming json structure will be less likely to create unforeseen errors and it will be easier to identify them.\n* It gives you the benefit of immutability without sacrificing the convenience of object.property access.\n* When you render your data, you don\'t want to retrieve objects separately for normalized references or marshal your normalized object back into a denormalized one. The use of the Proxy allows you to use your normalized structure as if it was a normal object.\n* You can transition to using immutable with minimal changes.\n* If you use the proxy, you can serialize a normalized structure back to its original JSON structure with `normalized.toJSON()`.\n\n### How about Maps, Lists, etc?\nNormalizr-Immutable uses Records where possible in order to maintain object.property style access. Sequences are implemented through Lists.\nIf you defined an object reference on your to-be-normalized object, it will be processed as a Record if the property has a Schema defined for it. Otherwise, it will become a Map (and require object.get(\'property\') style access).\n\nWhen you work with Lists and Maps, such as with loops, you should use es6 style `.forEach`, `.map`, etc. Using `for...in`, `for...of` and the like will not work.\n\nIf you use the `useMapsForEntityObjects: true` option when you normalize an object, the entity objects will be stored in a map, to allow you to merge new values into them. Be aware, that Map convert id keys to strings.\n\n```javascript\nconst normalized = {\n  entities:{//Record with keys: articles, users\n    articles: {//Map with keys: \'1\'\n      \'1\': {//Record with keys: id, txt, user\n        id:1,\n        txt: \'Bla\',\n        user: 15 //Optionally a proxy\n      }\n    },\n    users:{//Map with keys: \'15\'\n      \'15\':{//Record with keys: id, name\n        id:15,\n        name:\'Marc\'\n      }\n    }\n  },\n  result:[1]//List\n}\n```\n\n### Creating a schema\nCreating a schema is the same as originally in Normalizr, but we now add a Record to the definition. Please note that you need to use arrayOf, unionOf and valuesOf of Normalizr-Immutable.\n\n```javascript\nimport { Record, List, Map } from \'immutable\';\nimport { Schema, arrayOf } from \'normalizr-immutable\';\n\nconst User = new Record({\n  id:null,\n  name:null\n});\n\nconst Tag = new Record({\n  id:null,\n  label:null\n});\n\nconst Article = new Record({\n  id:null,\n  txt:null,\n  user: new User({}),\n  tags: new List()\n});\n\nconst schemas = {\n  article : new Schema(\'articles\', Article),\n  user    : new Schema(\'users\', User),\n  tag     : new Schema(\'tags\', Tag)\n};\n\nschemas.article.define({\n  user    : schemas.user,\n  tags    : arrayOf(schemas.tag)\n});\n\n```\n\n### Normalizing your dataSource\nNormalizing data is executed as follows.\n\n```javascript\nimport { normalize, arrayOf } from \'normalizr-immutable\';\n\nconst normalized = normalize(json, arrayOf(schemas.article),{});\n```\n\n### Working with Proxies\nNormally, if you normalize an object, the resulting structure will look something like this (All the Object definitions except for `List` are `Record` implementations).\n\n```javascript\nnew NormalizedRecord({\n  result: new List([1, 2]),\n  entities: new EntityStructure({\n    articles: new ValueStructure({\n      1: new Article({\n        id      : 1,\n        title   : \'Some Article\',\n        user    : 1,\n        tags    : new List([5])\n      })\n    }),\n    users: new ValueStructure({\n      1: new User({\n        id: 1,\n        name: \'Marc\'\n      })\n    }),\n    tags: new ValueStructure({\n      5: new Tag({\n        id:5,\n        label:\'React\'\n      })\n    })\n  })\n})\n\n```\n\nSo, if you\'re rendering an Article, in order to render the associated user, you will have to retrieve it from the entity structure. You could do this manually, or you could denormalize/marshal your structure when you retrieve it for rendering. But this can be expensive.\n\nFor this purpose, we introduce the proxy. The idea, is that you can simply reference `articles[1].user.name`. The proxy will take care of looking up the related object.\n\nPlease note that `Proxy` support is not yet consistent across browsers and can also give headaches in testing environments with incomplete support (I\'ve had stuff like infinite loops happen using node-inspector, etc). Tread with care.\n\nSo, with the proxy, an Article Record essentially looks like this:\n\n```javascript\nnew Article({\n  id      : 1,\n  title   : \'Some Article\',\n  author  : new Proxy({id:1}),\n  tags    : new List([new Proxy({id:5})])\n})\n```\n\nIn order to use the proxy, you will need to give it access to the actual object structure. We have developed this feature testing against Redux, so we pass it the getState function reference and the reference to the reducer inside the state structure.\n\n```javascript\nconst schemas = {\n  article : new Schema(\'articles\', Article, { idAttribute: \'id\', reducerKey: \'articleReducer\' }),\n  user    : new Schema(\'users\', User, { idAttribute: \'id\', reducerKey: \'userReducer\'  }),\n  tag     : new Schema(\'tags\', Tag, { idAttribute: \'id\', reducerKey: \'tagReducer\'   })\n};\n\n\nconst normalized = normalize(json.articles.items, arrayOf(schemas.article),{\n  getState,\n  reducerKey:\'articleReducer\'\n});\n```\n\nPlease note that we pass `getState` and not `getState()`. `getState` is a function reference to the method that will return the current state of the Redux store. If you are using Redux, you can get a reference to this method like so\n\n```javascript\nexport function loadArticles(){\n\n  return ( dispatch, getState) => {\n    [...]\n\n    const normalized = normalize(json, schema,{\n      getState\n    });\n\n    [...]\n  }\n}\n```\n\n`articleReducer` in this case, is the name of the reducer. Currently we assume that the `result` and `entitites` keys are available in the root of the referenced reducer. This will be made more flexible in future versions.\n\n### Browser support\nThis library has currently only been tested against React-Native, so I would like to hear about experiences in the browser. For a list of browsers with appropriate Proxy support [http://caniuse.com/#feat=proxy](http://caniuse.com/#feat=proxy).\n\n## API Reference\nThis API Reference borrows heavily from the original Normalizr project.\n\n### `new Schema(key, [options])`\n\nSchema lets you define a type of entity returned by your API.  \nThis should correspond to model in your server code.  \n\nThe `key` parameter lets you specify the name of the dictionary for this kind of entity.  \nThe `record` parameter lets you specify the Record that defines your entity.\n\n```javascript\nconst User = new Record({\n  id:null,\n  nickName: null,\n});\n\nconst Article = new Record({\n  //base comment\n  id:null,\n  txt:null,\n  author:new User(),\n});\n\nconst article = new Schema(\'articles\', Article);\n\n// You can use a custom id attribute\nconst article = new Schema(\'articles\', Article, { idAttribute: \'slug\' });\n\n// Or you can specify a function to infer it\nfunction generateSlug(entity) { /* ... */ }\nconst article = new Schema(\'articles\', Article { idAttribute: generateSlug });\n```\n\n### `Schema.prototype.define(nestedSchema)`\n\nLets you specify relationships between different entities.  \n\n```javascript\nconst article = new Schema(\'articles\', Article);\nconst user = new Schema(\'users\', User);\n\narticle.define({\n  author: user\n});\n```\n\n### `Schema.prototype.getKey()`\n\nReturns the key of the schema.\n\n```javascript\nconst article = new Schema(\'articles\', Article);\n\narticle.getKey();\n// articles\n```\n\n### `Schema.prototype.getIdAttribute()`\n\nReturns the idAttribute of the schema.\n\n```javascript\nconst article = new Schema(\'articles\', Article);\nconst slugArticle = new Schema(\'articles\', Article, { idAttribute: \'slug\' });\n\narticle.getIdAttribute();\n// id\nslugArticle.getIdAttribute();\n// slug\n```\n\n### `Schema.prototype.getRecord()`\n\nReturns the Record of the schema.\n\n```javascript\nconst article = new Schema(\'articles\', Article);\n\narticle.getRecord();\n// Article Record object\n```\n\n\n### `arrayOf(schema, [options])`\n\nDescribes an array of the schema passed as argument.\n\n```javascript\nconst article = new Schema(\'articles\', Article);\nconst user = new Schema(\'users\', User);\n\narticle.define({\n  author: user,\n  contributors: arrayOf(user)\n});\n```\n\nIf the array contains entities with different schemas, you can use the `schemaAttribute` option to specify which schema to use for each entity:\n\n```javascript\nconst article = new Schema(\'articles\', Article);\nconst image = new Schema(\'images\', Image);\nconst video = new Schema(\'videos\', Video);\nconst asset = {\n  images: image,\n  videos: video\n};\n\n// You can specify the name of the attribute that determines the schema\narticle.define({\n  assets: arrayOf(asset, { schemaAttribute: \'type\' })\n});\n\n// Or you can specify a function to infer it\nfunction inferSchema(entity) { /* ... */ }\narticle.define({\n  assets: arrayOf(asset, { schemaAttribute: inferSchema })\n});\n```\n\n### `normalize(obj, schema, [options])`\n\nNormalizes object according to schema.  \nPassed `schema` should be a nested object reflecting the structure of API response.\n\nYou may optionally specify any of the following options:\n\n* `useMapsForEntityObjects` (boolean): When `useMapsForEntityObjects` is set to `true`, it will use a Map for the entity objects (e.g. articles). When set to `false`, it will use a Record for this, but this comes at the expense of not being able to merge new entity objects into the resulting Record object. The advantage of using Records, is that you have dot-property access, but if you use the Proxy, the impact on your code of `useMapsForEntityObjects: true` is really minimal. I recommend using it.\n\n* `useProxyForResults` (boolean): When `useProxyForResults` is set to `true`, it will set a Proxy *also* in the result key object or `List`. This will allow you to reference the object directly from the result.\n\n* `debug` (boolean): Gives more detailed output on Proxy behaviour and helps you issues with accessing your reducer.\n\n```javascript\nconst normalized = normalize(json.articles.items, arrayOf(schemas.article),{\n  getState:store.getState,\n  useProxyForResults:true\n});\n\n//resulting object looks like this\nconst normalized = {//Record\n  entities:{\n    articles: {\n      1: {\n        id:1,\n        txt: \'Bla\',\n        user: new Proxy({id: 15, key: \'users\'})//reference to users\n      }\n    },\n    users:{//Record with keys: 15\n      15:{//Record with keys: id, name\n        id:15,\n        name:\'Marc\'\n      }\n    }\n  },\n  result:new List([new Proxy({id: 1, key: \'articles\'})])\n};\n\nconsole.log(normalized.result.get(0).user.name);//Prints \'Marc\'\n```\n\n* `assignEntity` (function): This is useful if your backend emits additional fields, such as separate ID fields, you\'d like to delete in the normalized entity. See [the tests](https://github.com/gaearon/normalizr/blob/a0931d7c953b24f8f680b537b5f23a20e8483be1/test/index.js#L89-L200) and the [discussion](https://github.com/gaearon/normalizr/issues/10) for a usage example.\n\n* `mergeIntoEntity` (function): You can use this to resolve conflicts when merging entities with the same key. See [the test](https://github.com/gaearon/normalizr/blob/47ed0ecd973da6fa7c8b2de461e35b293ae52047/test/index.js#L132-L197) and the [discussion](https://github.com/gaearon/normalizr/issues/34) for a usage example.\n\n```javascript\nconst article = new Schema(\'articles\', Article);\nconst user = new Schema(\'users\', User);\n\narticle.define({\n  author: user,\n  contributors: arrayOf(user),\n  meta: {\n    likes: arrayOf({\n      user: user\n    })\n  }\n});\n\n// ...\n\n// Normalize one article object\nconst json = { id: 1, author: ... };\nconst normalized = normalize(json, article);\n\n// Normalize an array of article objects\nconst arr = [{ id: 1, author: ... }, ...]\nconst normalized = normalize(arr, arrayOf(article));\n\n// Normalize an array of article objects, referenced by an object key:\nconst wrappedArr = { articles: [{ id: 1, author: ... }, ...] }\nconst normalized = normalize(wrappedArr, {\n  articles: arrayOf(article)\n});\n```\n\n### Final remarks\nThe use of the Proxy as a way of accessing the entity structure transparently, would be totally possible also in the original Normalizr library as well. I\'m still studying on ways to override functions in a non class structure. If anyone has any suggestions on this, I could spin off the Proxy functionality into a separate library that could serve both libraries.\n\nThe way I turn a list of entities into Records (the ValueStructure Record) is a bit of a hack. I basically create the Record with the actual values as defaults, which is not the way you should be using Records. I apply this hack to ensure that we can keep referencing objects through dot notation. If someone has any problems with this in terms of performance, I would like to hear about it.\n\nThis library has been developed as part of [Ology](https://www.ology.com.br), the social network for physicians.\n\nI removed harmony-reflect because it\'s a rather big library and more recent versions of v8 don\'t need it. I\'m just maintaining the harmony-proxy shim.\n\n### TODO\n* Verify working of unionOf and valuesOf. I haven\'t really worked with that yet.\n\n### Troubleshooting\n* If you get any error message with regards to the Proxy object being unknown, please make sure you have set up your babel presets correctly to support proxies. If you use mocha for testing, you will need to add `--harmony-proxies` to the mocha command\n* If you get unexpected results, please check that you are not accidently using arrayOf, unionOf and valuesOf of the original Normalizr library. Because this library doesn\'t export some of the components these functions use, I had to copy them and they will fail instanceof even though they are functionally equivalent.\n',
+25 silly publish   readmeFilename: 'README.md',
+25 silly publish   gitHead: '5d3582e52e92f0ffe8285eff21de8b17ba0dce16',
+25 silly publish   _id: 'normalizr-immutable@0.0.4-beta9',
+25 silly publish   _shasum: '2ebdb234e80ca0c77c57d2a520d72aadb14a7e27',
+25 silly publish   _from: '.' }
+26 verbose getPublishConfig undefined
+27 silly mapToRegistry name normalizr-immutable
+28 silly mapToRegistry using default registry
+29 silly mapToRegistry registry http://registry.npmjs.org/
+30 silly mapToRegistry data Result {
+30 silly mapToRegistry   raw: 'normalizr-immutable',
+30 silly mapToRegistry   scope: null,
+30 silly mapToRegistry   name: 'normalizr-immutable',
+30 silly mapToRegistry   rawSpec: '',
+30 silly mapToRegistry   spec: 'latest',
+30 silly mapToRegistry   type: 'tag' }
+31 silly mapToRegistry uri http://registry.npmjs.org/normalizr-immutable
+32 verbose publish registryBase http://registry.npmjs.org/
+33 silly publish uploading /Users/marcschipperheijn/.npm/normalizr-immutable/0.0.4-beta9/package.tgz
+34 verbose request uri http://registry.npmjs.org/normalizr-immutable
+35 verbose request sending authorization for write operation
+36 info attempt registry request try #1 at 12:24:15 AM
+37 verbose request using bearer token for auth
+38 verbose request id e5a2522d1e3ea8a1
+39 http request PUT http://registry.npmjs.org/normalizr-immutable
+40 http 403 http://registry.npmjs.org/normalizr-immutable
+41 verbose headers { 'content-type': 'application/json',
+41 verbose headers   'cache-control': 'max-age=300',
+41 verbose headers   'content-length': '101',
+41 verbose headers   'accept-ranges': 'bytes',
+41 verbose headers   date: 'Wed, 06 Jul 2016 03:24:15 GMT',
+41 verbose headers   via: '1.1 varnish',
+41 verbose headers   connection: 'keep-alive',
+41 verbose headers   'x-served-by': 'cache-gru7121-GRU',
+41 verbose headers   'x-cache': 'MISS',
+41 verbose headers   'x-cache-hits': '0',
+41 verbose headers   'x-timer': 'S1467775455.340601,VS0,VE657',
+41 verbose headers   vary: 'Accept-Encoding' }
+42 verbose request invalidating /Users/marcschipperheijn/.npm/registry.npmjs.org/normalizr-immutable on PUT
+43 error publish Failed PUT 403
+44 verbose stack Error: "You cannot publish over the previously published version 0.0.4-beta9." : normalizr-immutable
+44 verbose stack     at makeError (/Users/marcschipperheijn/.nvm/versions/node/v6.1.0/lib/node_modules/npm/node_modules/npm-registry-client/lib/request.js:264:12)
+44 verbose stack     at CachingRegistryClient.<anonymous> (/Users/marcschipperheijn/.nvm/versions/node/v6.1.0/lib/node_modules/npm/node_modules/npm-registry-client/lib/request.js:252:14)
+44 verbose stack     at Request._callback (/Users/marcschipperheijn/.nvm/versions/node/v6.1.0/lib/node_modules/npm/node_modules/npm-registry-client/lib/request.js:172:14)
+44 verbose stack     at Request.self.callback (/Users/marcschipperheijn/.nvm/versions/node/v6.1.0/lib/node_modules/npm/node_modules/request/request.js:200:22)
+44 verbose stack     at emitTwo (events.js:106:13)
+44 verbose stack     at Request.emit (events.js:191:7)
+44 verbose stack     at Request.<anonymous> (/Users/marcschipperheijn/.nvm/versions/node/v6.1.0/lib/node_modules/npm/node_modules/request/request.js:1067:10)
+44 verbose stack     at emitOne (events.js:101:20)
+44 verbose stack     at Request.emit (events.js:188:7)
+44 verbose stack     at IncomingMessage.<anonymous> (/Users/marcschipperheijn/.nvm/versions/node/v6.1.0/lib/node_modules/npm/node_modules/request/request.js:988:12)
+45 verbose statusCode 403
+46 verbose pkgid normalizr-immutable
+47 verbose cwd /Users/Shared/java/projects/react/projects/normalizr-immutable
+48 error Darwin 15.4.0
+49 error argv "/Users/marcschipperheijn/.nvm/versions/node/v6.1.0/bin/node" "/Users/marcschipperheijn/.nvm/versions/node/v6.1.0/bin/npm" "publish" "./" "--tag" "beta"
+50 error node v6.1.0
+51 error npm  v3.9.6
+52 error code E403
+53 error "You cannot publish over the previously published version 0.0.4-beta9." : normalizr-immutable
+54 error If you need help, you may report this error at:
+54 error     <https://github.com/npm/npm/issues>
+55 verbose exit [ 1, true ]

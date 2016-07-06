@@ -19,6 +19,38 @@ function defaultAssignEntity(normalized, key, entity) {
   normalized[key] = entity;
 }
 
+function getEntityById(id, schema, state, options){
+
+  if(typeof state[schema.getReducerKey()] === 'undefined')
+    throw new Error(`No such reducer: ${schema.getReducerKey()}`);
+
+  const entityRoot = state[schema.getReducerKey()] instanceof Collection.Keyed?
+    state[schema.getReducerKey()].get('entities') :
+    state[schema.getReducerKey()]['entities'];
+
+  if(entityRoot){
+
+    if(options && options.debug){
+      if(typeof entityRoot[schema.getKey()] === 'undefined'){
+        console.info(`Normalizr: ${schema.getKey()} not found on reducer ${schema.getReducerKey()}`);
+      }else if(options.useMapsForEntityObjects){
+        if(entityRoot[schema.getKey()].findKey(ky => ky === id + '') === null)
+          console.info(`Normalizr: ${schema.getKey()}-${id} not found on reducer ${schema.getReducerKey()}`);
+      }else{
+        if(Object.keys(entityRoot[schema.getKey()]).indexOf(id) === -1)
+          console.info(`Normalizr: ${schema.getKey()}-${id} not found on reducer ${schema.getReducerKey()}`);
+      }
+    }
+
+    const entitySource = entityRoot.get(schema.getKey());
+
+    return entitySource instanceof Map? entitySource.get(id + '') : entitySource[id];
+
+  }else{
+    console.info(`Normalizr: reducer ${schema.getReducerKey()} doesn't have entities key. Are you sure you configured the correct reducer?`);
+  }
+}
+
 function proxy(id, schema, bag, options){
   /**
    * if options contains getState reference and reducer key we can create a proxyHandler
@@ -44,39 +76,9 @@ function proxy(id, schema, bag, options){
           return target.id;
 
         try{
-          const state = getState();
+          const entity = getEntityById(target.id, schema, getState(), options);
 
-          if(typeof state[schema.getReducerKey()] === 'undefined')
-            throw new Error(`No such reducer: ${schema.getReducerKey()}`);
-
-          //For now we want to assume that the reducer root can be an object as wel as immutable :-(
-
-          const entityRoot = state[schema.getReducerKey()] instanceof Collection.Keyed?
-            state[schema.getReducerKey()].get('entities') :
-            state[schema.getReducerKey()]['entities'];
-
-          if(entityRoot){
-
-            if(options.debug){
-              if(typeof entityRoot[schema.getKey()] === 'undefined'){
-                console.info(`Normalizr: ${schema.getKey()} not found on reducer ${schema.getReducerKey()}`);
-              }else if(options.useMapsForEntityObjects){
-                if(entityRoot[schema.getKey()].findKey(ky => ky === target.id + '') === null)
-                  console.info(`Normalizr: ${schema.getKey()}-${target.id} not found on reducer ${schema.getReducerKey()}`);
-              }else{
-                if(Object.keys(entityRoot[schema.getKey()]).indexOf(target.id) === -1)
-                  console.info(`Normalizr: ${schema.getKey()}-${target.id} not found on reducer ${schema.getReducerKey()}`);
-              }
-            }
-
-            if(options.useMapsForEntityObjects){
-              return entityRoot.get(schema.getKey()).get(target.id + '').get(name);
-            }else{
-              return entityRoot.get(schema.getKey())[target.id][name];
-            }
-          }else if(options.debug){
-            console.info(`Normalizr: reducer ${schema.getReducerKey()} doesn't have entities key. Are you sure you configured the correct reducer?`);
-          }
+          return entity[name];
 
         }catch(err){
 
@@ -92,22 +94,15 @@ function proxy(id, schema, bag, options){
         return undefined;
       },
       set(k,v){
-        throw new Error('Not supported');
+        //setting data on the proxy is assumed to happen elsewhere, this is immutable.
+        return true;
       },
       has(name){
 
         if(typeof getState === 'undefined')
           return false;
 
-        const entityRoot = state[schema.getReducerKey()] instanceof Collection.Keyed?
-          state[schema.getReducerKey()].get('entities') :
-          state[schema.getReducerKey()]['entities'];
-
-        if(options.useMapsForEntityObjects){
-          return entityRoot.get(schema.getKey()).get(id + '').has(name);
-        }else{
-          return entityRoot.get(schema.getKey())[id].has(name);
-        }
+        return getEntityById(id, schema, getState()).has(name);
       },
       valueOf() {
         return {id};
