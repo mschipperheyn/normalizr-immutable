@@ -455,7 +455,7 @@ describe("test normalizr", () => {
         payload:normalized
       });
 
-      expect(normalized.result.get(0).user.toString()).to.equal('Record { "id": 193, "nickName": Diogenes }');
+      expect(normalized.result.get(0).user.toString()).to.equal('Record { "id": 193, "nickName": "Diogenes" }');
       expect(JSON.stringify(normalized.result.get(0).user.toJS())).to.equal('{"id":193,"nickName":"Diogenes"}');
     });
 
@@ -551,7 +551,54 @@ describe("test normalizr", () => {
 
     });
 
+    it("mutates an entity Record through the proxy by creating a new Record (and not a Map)", () => {
+      const normalized = normalize(json.articles.items, arrayOf(schemas.article),{
+        getState:store.getState,
+        useMapsForEntityObjects:true,
+        useProxyForResults:true,
+        debug:false
+      });
+
+      store.dispatch({
+        type:'articles',
+        payload:normalized
+      })
+
+      assert.instanceOf(normalized.entities.articles.get("49441"), Article, 'We have an entity Article');
+
+      let res = normalized.entities.articles.get("49441").set('txt','Hello World');
+
+      assert.notInstanceOf(res, Map, 'We have a proxy Map 1');
+      assert.instanceOf(res, Article, 'We have a proxy Article 1');
+
+      res = normalized.result.get(0).set('txt','Hello World');
+
+      assert.notInstanceOf(res, Map, 'We have a proxy Map 2');
+      assert.instanceOf(res, Article, 'We have a proxy Article 2');
+
+    });
+
+    it("be able to distinguish proxies", () => {
+
+      const normalized = normalize(json.articles.items, arrayOf(schemas.article),{
+        getState:store.getState,
+        useMapsForEntityObjects:true,
+        useProxyForResults:true,
+        debug:false
+      });
+
+      store.dispatch({
+        type:'articles',
+        payload:normalized
+      })
+
+      expect(normalized.entities.articles.get('49441').user._isProxy).to.not.be.undefined;
+      expect(normalized.entities.articles.get('49441').user._isProxy).to.be.true;
+
+    });
+
     it("show processing of unions", () => {
+
 
     });
 });

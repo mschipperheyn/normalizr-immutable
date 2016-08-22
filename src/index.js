@@ -69,11 +69,28 @@ function proxy(id, schema, bag, options){
       id: id,
       key: schema.getKey()
     },{
-
-      get(target, name, receiver) {
-
+      construct(target, argumentsList, newTarget){
+        return new schema.getRecord()(argumentsList);
+      },
+      getPrototypeOf(target){
+        return Object.getPrototypeOf(getEntityById(target.id, schema, getState(), options));
+      },
+      ownKeys(target){
+        return Object.getOwnPropertyNames(getEntityById(target.id, schema, getState(), options));
+      },
+      isExtensible(target){
+        return true;
+      },
+      set(target, k, v){
+        return getEntityById(target.id, schema, getState(), options).set(k,v);
+      },
+      get(target, name) {
         if(name === 'id' || typeof getState === 'undefined')
           return target.id;
+
+        //In some cases, particularly deep merging, we may want to avoid processing proxies. I don't know of a better way to identify a Proxy
+        if(name === '_isProxy')
+          return true;
 
         try{
           const entity = getEntityById(target.id, schema, getState(), options);
@@ -92,10 +109,6 @@ function proxy(id, schema, bag, options){
 
         }
         return undefined;
-      },
-      set(k,v){
-        //setting data on the proxy is assumed to happen elsewhere, this is immutable.
-        return true;
       },
       has(name){
 
