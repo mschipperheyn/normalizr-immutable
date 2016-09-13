@@ -250,6 +250,21 @@ export function loadArticles(){
 
 `articleReducer` in this case, is the name of the reducer. Currently we assume that the `result` and `entitites` keys are available in the root of the referenced reducer. This will be made more flexible in future versions.
 
+#### Problems that you may have with Proxies and merging data
+
+1. When you merge an object that is a Proxy at the root directly, you will end up with a Map and not a Record. I recommend merging directly against the entity structure and not against the result list.  
+2. If you ever get an exception such as `collection.update is not a function`, this is related to trying to merge against a Proxy, which should be avoided anyways. I use this merger function to avoid this.
+
+```javascript
+export function merger(a, b) {
+  if (a && a.mergeWith && !isList(a) && !isList(b) && !isSet(a) && !isSet(b) && !a._isProxy) {
+    return a.mergeDeepWith(merger, b)
+  }
+  return b
+}
+
+3. If you want to sort a or manipulate the results list or entities structure before the entity structure has been merged into the reducer, you get weird immutable errors. The reason is usually that by manipulating before you merge, the proxy structure is trying to reference an object that is not there yet. What I do to avoid this is dispatch and merge the entities separately from the results merge. 
+
 ### Browser support
 This library has currently only been tested against React-Native, so I would like to hear about experiences in the browser. For a list of browsers with appropriate Proxy support [http://caniuse.com/#feat=proxy](http://caniuse.com/#feat=proxy).
 
