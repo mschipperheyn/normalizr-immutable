@@ -17,6 +17,7 @@ import json from './mocks/articles.json';
 import jsonUpdate from './mocks/articles_update.json';
 import jsonObject from './mocks/article_comments.json';
 import jsonUsers from './mocks/users.json';
+import jsonReference from './mocks/references.json';
 import { normalize, Schema, arrayOf, NormalizedRecord } from '../src/index';
 
 import { Record, List, Map } from 'immutable';
@@ -39,8 +40,14 @@ const Article = Record({
   txt:null,
   user:new User(),
   tags:new List(),
-  comments:new List()
+  comments:new List(),
+  reference:null,
 
+});
+
+const Reference = Record({
+  pk:null,//id
+  title:null
 });
 
 const schemas = {
@@ -594,6 +601,39 @@ describe("test normalizr", () => {
 
       expect(normalized.entities.articles.get('49441').user._isProxy).to.not.be.undefined;
       expect(normalized.entities.articles.get('49441').user._isProxy).to.be.true;
+
+    });
+
+    it("should be able to deal with identities not be: id", () => {
+
+      const mySchemas = {
+        article : new Schema('articles', Article, { reducerKey: reducerKey }),
+        user : new Schema('users', User, { reducerKey: reducerKey  }),
+        tag : new Schema('tags', Tag, { reducerKey: reducerKey  }),
+        reference : new Schema('references', Reference, { idAttribute: 'pk', reducerKey: reducerKey  }),
+      };
+
+      mySchemas.article.define({
+        user: mySchemas.user,
+        tags: arrayOf(mySchemas.tag),
+        comments:arrayOf(mySchemas.article),
+        reference:mySchemas.reference,
+      });
+
+      const normalized = normalize(jsonReference.articles.items, arrayOf(mySchemas.article),{
+        getState:store.getState,
+        useMapsForEntityObjects:true,
+        useProxyForResults:true,
+        debug:false
+      });
+
+      store.dispatch({
+        type:'articles',
+        payload:normalized
+      });
+
+      expect(normalized.entities.references.get('13_40')).to.not.be.undefined;
+      expect(normalized.entities.articles.get('49441').reference.pk).to.equal('13_40');
 
     });
 

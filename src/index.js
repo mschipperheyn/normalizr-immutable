@@ -85,7 +85,7 @@ function proxy(id, schema, bag, options){
         return getEntityById(target.id, schema, getState(), options).set(k,v);
       },
       get(target, name) {
-        if(name === 'id' || typeof getState === 'undefined')
+        if(name === schema.getIdAttribute() || typeof getState === 'undefined')
           return target.id;
 
         //In some cases, particularly deep merging, we may want to avoid processing proxies. I don't know of a better way to identify a Proxy
@@ -346,9 +346,9 @@ function normalize(obj, schema, options = {
   if(options.getState && !options.useProxyForResults){
     results = result instanceof List?
       result.map(function(val){
-        return val.id;
+        return val[schema.getIdAttribute()];
       }) :
-      result.id
+      result[schema.getIdAttribute()]
   }else{
     results = result;
   }

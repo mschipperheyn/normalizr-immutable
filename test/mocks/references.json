@@ -1,0 +1,65 @@
+{
+  "articles" : {
+    "items" : [
+      {
+        "user" : {
+          "nickName" : "Diogenes",
+          "id" : 193
+        },
+        "reference":{
+          "pk":"13_40",
+          "title":"My Reference"
+        },
+        "id" : 49441,
+        "txt" : "bla"
+      },
+      {
+        "user" : {
+          "nickName" : "Marc",
+          "id" : 192
+        },
+        "reference": null,
+        "id" : 49442,
+        "txt" : "bla die bla"
+      },
+      {
+        "user" : {
+          "nickName" : "Marc",
+          "id" : 192
+        },
+        "id" : 49443,
+        "reference": null,
+        "txt" : "bla die bla 2",
+        "tags": [{
+            "id" : 5,
+            "label" : "React"
+          },
+          {
+            "id" : 6,
+            "label" : "Normalizr"
+          }
+        ]
+      },
+      {
+        "user" : {
+          "nickName" : "Marc",
+          "id" : 192
+        },
+        "id" : 49449,
+        "reference": null,
+        "txt" : "bla die bla 2",
+        "tags": [{
+            "id" : 5,
+            "label" : "React"
+          },
+          {
+            "id" : 6,
+            "label" : "Normalizr"
+          }
+        ]
+      }
+
+    ],
+    "resultCount" : 114
+  }
+}
