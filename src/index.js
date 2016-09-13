@@ -47,7 +47,7 @@ function getEntityById(id, schema, state, options){
     return entitySource instanceof Map? entitySource.get(id + '') : entitySource[id];
 
   }else{
-    console.info(`Normalizr: reducer ${schema.getReducerKey()} doesn't have entities key. Are you sure you configured the correct reducer?`);
+    console.info(`Normalizr: reducer ${schema.getReducerKey()} doesn't have entities key ${id}. Are you sure you configured the correct reducer?`);
   }
 }
 
@@ -85,7 +85,7 @@ function proxy(id, schema, bag, options){
         return getEntityById(target.id, schema, getState(), options).set(k,v);
       },
       get(target, name) {
-        if(name === schema.getIdAttribute() || typeof getState === 'undefined')
+        if(name === schema.getIdAttribute() || name=== 'valueOf' || typeof getState === 'undefined')
           return target.id;
 
         //In some cases, particularly deep merging, we may want to avoid processing proxies. I don't know of a better way to identify a Proxy
@@ -116,9 +116,6 @@ function proxy(id, schema, bag, options){
           return false;
 
         return getEntityById(id, schema, getState()).has(name);
-      },
-      valueOf() {
-        return {id};
       }
     });
 
@@ -247,8 +244,9 @@ function visit(obj, schema, bag, options = {}) {
 
   if (!lodashIsObject(obj) && schema._mappedBy) {
     obj = {
-      [schema.getIdAttribute()]: obj,
+      [schema instanceof IterableSchema? schema.getItemSchema().getIdAttribute() : schema.getIdAttribute()]: obj,
     };
+
   } else if (!lodashIsObject(obj)) {
     return obj;
   }
@@ -342,13 +340,15 @@ function normalize(obj, schema, options = {
   //This will either return a sequence, an id or a Proxy object
   let result = visit(obj, schema, bag, options);
 
+  const idAttribute = schema instanceof IterableSchema? schema.getItemSchema().getIdAttribute() : schema.getIdAttribute();
+
   //we are now assuming that the returned "ids" are actually proxies if there is a getState method
   if(options.getState && !options.useProxyForResults){
     results = result instanceof List?
       result.map(function(val){
-        return val[schema.getIdAttribute()];
+        return val[idAttribute];
       }) :
-      result[schema.getIdAttribute()]
+      result[idAttribute]
   }else{
     results = result;
   }
