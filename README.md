@@ -163,7 +163,7 @@ Normalizing data is executed as follows.
 ```javascript
 import { normalize, arrayOf } from 'normalizr-immutable';
 
-const normalized = normalize(json, arrayOf(schemas.article),{});
+const normalized = normalize(json, arrayOf(schemas.article), {});
 ```
 
 ### Working with Proxies
