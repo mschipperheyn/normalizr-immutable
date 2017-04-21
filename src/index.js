@@ -52,8 +52,8 @@ function proxy(id, schema, bag, options){
           //For now we want to assume that the reducer root can be an object as wel as immutable :-(
 
           const entityRoot = typeof state[schema.getReducerKey()] instanceof Collection.Keyed?
-            state[schema.getReducerKey()].get('entities') :
-            state[schema.getReducerKey()]['entities'];
+            state[schema.getReducerKey()] :
+            state[schema.getReducerKey()];
 
           if(entityRoot){
 
@@ -100,8 +100,8 @@ function proxy(id, schema, bag, options){
           return false;
 
         const entityRoot = typeof state[schema.getReducerKey()] instanceof Collection.Keyed?
-          state[schema.getReducerKey()].get('entities') :
-          state[schema.getReducerKey()]['entities'];
+          state[schema.getReducerKey()] :
+          state[schema.getReducerKey()];
 
         if(options.useMapsForEntityObjects){
           return entityRoot.get(schema.getKey()).get(id + '').has(name);
